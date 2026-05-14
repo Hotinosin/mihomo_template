@@ -1,0 +1,17 @@
+# Local/private configs may contain subscription URLs.
+*.yaml
+!*Template.yaml
+
+# Local secret and environment files
+.env
+.env.*
+
+# Local notes and media
+.DS_Store
+change.md
+*.png
+archive-local/
+
+# Generated provider/cache files
+providers/
+ui/
