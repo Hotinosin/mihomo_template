@@ -476,32 +476,32 @@ rule-providers-general: &rule-providers-general
 rule-providers:
   company_custom_crypto:
     <<: *rule-providers-general
-    url: https://raw.githubusercontent.com/Hotinosin/clash-rule/refs/heads/main/payload/company_custom_crypto.yaml
+    url: https://raw.githubusercontent.com/Hotinosin/mihomo_template/main/rule_set/company_custom_crypto.yaml
     path: ./providers/rule/rule-provider_payload/company_custom_crypto.yaml
 
   company_custom_direct:
     <<: *rule-providers-general
-    url: https://raw.githubusercontent.com/Hotinosin/clash-rule/refs/heads/main/payload/company_custom_direct.yaml
+    url: https://raw.githubusercontent.com/Hotinosin/mihomo_template/main/rule_set/company_custom_direct.yaml
     path: ./providers/rule/rule-provider_company_custom_direct.yaml
 
   company_custom_rules:
     <<: *rule-providers-general
-    url: https://raw.githubusercontent.com/Hotinosin/clash-rule/refs/heads/main/payload/company_custom_rules.yaml
+    url: https://raw.githubusercontent.com/Hotinosin/mihomo_template/main/rule_set/company_custom_rules.yaml
     path: ./providers/rule/rule-provider_company_custom_rules.yaml
 
   custom_rules:
     <<: *rule-providers-general
-    url: https://raw.githubusercontent.com/Hotinosin/clash_rule_fish/refs/heads/ho_edit/Ruleset/custom_rules.yaml
+    url: https://raw.githubusercontent.com/Hotinosin/mihomo_template/main/rule_set/custom_rules.yaml
     path: ./providers/rule/rule-provider_custom_rules.yaml
 
   custom_direct:
     <<: *rule-providers-general
-    url: https://raw.githubusercontent.com/Hotinosin/clash_rule_fish/refs/heads/ho_edit/Ruleset/custom_direct.yaml
+    url: https://raw.githubusercontent.com/Hotinosin/mihomo_template/main/rule_set/custom_direct.yaml
     path: ./providers/rule/rule-provider_custom_direct.yaml
 
   custom_ddns:
     <<: *rule-providers-general
-    url: https://raw.githubusercontent.com/Hotinosin/clash_rule_fish/refs/heads/ho_edit/Ruleset/custom_ddns.yaml
+    url: https://raw.githubusercontent.com/Hotinosin/mihomo_template/main/rule_set/custom_ddns.yaml
     path: ./providers/rule/rule-provider_custom_ddns.yaml
 
 ## 路由规则设置---------------------------------------------------------------------------------------------------
