@@ -5,10 +5,8 @@ payload:
   - DOMAIN-SUFFIX,printables.com
   - DOMAIN-SUFFIX,grempt.com
   - DOMAIN-SUFFIX,cyberbus.net
-  - DOMAIN-SUFFIX,brew.sh
   - DOMAIN-SUFFIX,qichiyu.com
   - DOMAIN-SUFFIX,ipwho.is
-  - DOMAIN-SUFFIX,ghcr.io
   - DOMAIN-SUFFIX,rarecloud.io
   - DOMAIN,ptest-1.ipcheck.ing
   - DOMAIN,ptest-3.ipcheck.ing
@@ -42,7 +40,6 @@ payload:
   - DOMAIN-SUFFIX,simcitybuildit.com
   - DOMAIN-SUFFIX,artifacts.bitwarden.com
   - DOMAIN-SUFFIX,sub.xeton.dev
-  - DOMAIN-SUFFIX,www.python.org
   - DOMAIN-SUFFIX,cdn.kernel.org
   - DOMAIN-SUFFIX,sourceware.org
   - DOMAIN-SUFFIX,ftpmirror.gnu.org
