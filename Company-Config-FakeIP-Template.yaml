@@ -557,10 +557,8 @@ rules:
   - GEOSITE,win-extra,Ⓜ️微软服务 # outlook域名
   - GEOSITE,win-update,Ⓜ️微软服务 # 微软更新域名
   # 编程-docker相关
+  - GEOSITE,category-dev@!cn,✅默认代理
   - GEOSITE,category-container,✅默认代理 # 各种容器服务
-  - GEOSITE,docker,✅默认代理
-  - GEOSITE,homebrew,✅默认代理
-  - GEOSITE,python,✅默认代理 # Python服务，例如pip直连下载较慢
 
 
   #### 兜底规则块，一般精细的分流规则应在其上
