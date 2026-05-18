@@ -1,0 +1,32 @@
+# Generated from legacy Hotinosin rulesets. Duplicates removed.
+payload:
+  - DOMAIN-KEYWORD,nikki
+  - DOMAIN-SUFFIX,hysteria.network
+  - DOMAIN-SUFFIX,jetbrains.com
+  - DOMAIN-SUFFIX,atlassian.com
+  - DOMAIN-SUFFIX,docker.com
+  - DOMAIN-SUFFIX,docker.io
+  - DOMAIN-SUFFIX,githubusercontent.com
+  - DOMAIN-SUFFIX,githubassets.com
+  - DOMAIN-SUFFIX,greasyfork.org
+  - DOMAIN-SUFFIX,v2ex.com
+  - DOMAIN-SUFFIX,alpinelinux.org
+  - DOMAIN-SUFFIX,firecrawl.dev
+  - DOMAIN-SUFFIX,groq.com
+  - DOMAIN-KEYWORD,trae
+  - DOMAIN-SUFFIX,clawcloudrun.com
+  - DOMAIN-SUFFIX,coze.com
+  - DOMAIN-SUFFIX,stablevideo.com
+  - DOMAIN-SUFFIX,imgix.net
+  - DOMAIN-SUFFIX,googletagmanager.com
+  - DOMAIN-SUFFIX,unsplash.com
+  - DOMAIN-SUFFIX,mirror.xyz
+  - DOMAIN-SUFFIX,rsshub.app
+  - DOMAIN-SUFFIX,yts.mx
+  - DOMAIN-SUFFIX,glassnode.com
+  - DOMAIN-SUFFIX,quantocracy.com
+  - DOMAIN-SUFFIX,tradingview.com
+  - DOMAIN-SUFFIX,investing.com
+  - DOMAIN-SUFFIX,joinautopilot.com
+  - DOMAIN-SUFFIX,cloudfront.net
+  - DOMAIN-SUFFIX,same.new

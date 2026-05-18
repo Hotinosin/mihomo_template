@@ -140,11 +140,8 @@ dns:
   nameserver-policy:
     ## Crypto / 交易所 ---------------------------------------------------------------
     # ✅新增：这些域名虽然默认会返回 fake-ip，但指定可信 DNS 可以降低边界场景污染风险，并兼容后续 redir-host 测试
-    "geosite:binance": *secure-dns
-    "geosite:okx": *secure-dns
-    "rule-set:company_custom_okx": *secure-dns
+    "geosite:category-cryptocurrency": *secure-dns
     "rule-set:company_custom_crypto": *secure-dns
-    "rule-set:company_custom_api": *secure-dns
 
     ## AI ---------------------------------------------------------------------------
     # ✅新增：AI 服务走可信 DoH
@@ -458,20 +455,11 @@ proxy-groups:
 ## 规则提供者设置---------------------------------------------------------------------------------------------------
 rule-providers-general: &rule-providers-general
   type: http
-  behavior: domain
+  behavior: classical
+  format: yaml
   interval: 86400
 
 rule-providers:
-  company_custom_okx:
-    <<: *rule-providers-general
-    url: https://raw.githubusercontent.com/Hotinosin/clash-rule/refs/heads/main/payload/company_custom_okx.yaml
-    path: ./providers/rule/rule-provider_company_custom_okx.yaml
-
-  company_custom_api:
-    <<: *rule-providers-general
-    url: https://raw.githubusercontent.com/Hotinosin/clash-rule/refs/heads/main/payload/company_custom_api.yaml
-    path: ./providers/rule/rule-provider_company_custom_api.yaml
-
   company_custom_crypto:
     <<: *rule-providers-general
     url: https://raw.githubusercontent.com/Hotinosin/clash-rule/refs/heads/main/payload/company_custom_crypto.yaml
@@ -536,12 +524,9 @@ rules:
 
 
   # Coin 相关规则块
-  - GEOSITE,binance,💰Crypto
-  - GEOSITE,okx,💰Crypto
+  - GEOSITE,category-cryptocurrency,💰Crypto
   - GEOSITE,yahoo,💰Crypto
-  - RULE-SET,company_custom_okx,💰Crypto
   - RULE-SET,company_custom_crypto,💰Crypto
-  - RULE-SET,company_custom_api,💰Crypto
 
   # AI相关
   - GEOSITE,openai,🅰️Ai # openai服务

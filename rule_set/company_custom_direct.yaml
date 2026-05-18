@@ -1,0 +1,14 @@
+# Generated from legacy Hotinosin rulesets. Duplicates removed.
+payload:
+  - DOMAIN-KEYWORD,szse
+  - DOMAIN-KEYWORD,mirrors
+  - DOMAIN-KEYWORD,cn
+  - DOMAIN-SUFFIX,love.xn
+  - DOMAIN-SUFFIX,bing.com
+  - DOMAIN-SUFFIX,xiaoeknow.com
+  - DOMAIN-SUFFIX,governance.mav.xyz
+  - DOMAIN-SUFFIX,mirrors.vsean.net
+  - DOMAIN-SUFFIX,upyun.com
+  - DOMAIN-SUFFIX,quantclass.cn
+  - DOMAIN-SUFFIX,qtcls.cn
+  - DOMAIN-KEYWORD,quantclass

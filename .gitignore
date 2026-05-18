@@ -1,6 +1,8 @@
 # Local/private configs may contain subscription URLs.
 *.yaml
 !*Template.yaml
+!rule_set/
+!rule_set/*.yaml
 
 # Local secret and environment files
 .env

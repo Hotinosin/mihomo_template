@@ -421,20 +421,11 @@ proxy-groups:
 ## 规则提供者设置---------------------------------------------------------------------------------------------------
 rule-providers-general: &rule-providers-general
   type: http
-  behavior: domain
+  behavior: classical
+  format: yaml
   interval: 86400
 
 rule-providers:
-  company_custom_okx:
-    <<: *rule-providers-general
-    url: https://raw.githubusercontent.com/Hotinosin/clash-rule/refs/heads/main/payload/company_custom_okx.yaml
-    path: ./providers/rule/rule-provider_company_custom_okx.yaml
-
-  company_custom_api:
-    <<: *rule-providers-general
-    url: https://raw.githubusercontent.com/Hotinosin/clash-rule/refs/heads/main/payload/company_custom_api.yaml
-    path: ./providers/rule/rule-provider_company_custom_api.yaml
-
   company_custom_crypto:
     <<: *rule-providers-general
     url: https://raw.githubusercontent.com/Hotinosin/clash-rule/refs/heads/main/payload/company_custom_crypto.yaml
@@ -499,12 +490,9 @@ rules:
 
 
   # Coin 相关规则块
-  - GEOSITE,binance,💰Crypto
-  - GEOSITE,okx,💰Crypto
+  - GEOSITE,category-cryptocurrency,💰Crypto
   - GEOSITE,yahoo,💰Crypto
-  - RULE-SET,company_custom_okx,💰Crypto
   - RULE-SET,company_custom_crypto,💰Crypto
-  - RULE-SET,company_custom_api,💰Crypto
 
   # AI相关
   - GEOSITE,openai,🅰️Ai # openai服务

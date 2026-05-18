@@ -396,7 +396,8 @@ proxy-groups:
 ## 规则提供者设置---------------------------------------------------------------------------------------------------
 rule-providers-general: &rule-providers-general
   type: http
-  behavior: domain
+  behavior: classical
+  format: yaml
   interval: 86400
 
 rule-providers:
@@ -450,8 +451,7 @@ rules:
   - GEOSITE,category-ai-!cn,🅰️Ai # 中国外AI
 
   # Crypto / 交易所
-  - GEOSITE,binance,💰Crypto
-  - GEOSITE,okx,💰Crypto
+  - GEOSITE,category-cryptocurrency,💰Crypto
   - GEOSITE,yahoo,💰Crypto
 
   # 常见外网服务

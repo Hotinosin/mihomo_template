@@ -1,0 +1,37 @@
+# Generated from legacy Hotinosin rulesets. Duplicates removed.
+payload:
+  - DOMAIN-SUFFIX,appstorrent.ru
+  - DOMAIN-SUFFIX,api.day.app
+  - DOMAIN-SUFFIX,proxmox.com
+  - DOMAIN-SUFFIX,akile.io
+  - DOMAIN-KEYWORD,tinder
+  - DOMAIN-SUFFIX,akilehinetnat.645781.xyz
+  - DOMAIN-SUFFIX,api.ipify.org
+  - DOMAIN-SUFFIX,bam.nr-data.net
+  - DOMAIN-SUFFIX,sentry.io
+  - DOMAIN-SUFFIX,qing-yu.top
+  - DOMAIN-SUFFIX,connectivitycheck.gstatic.com
+  - DOMAIN-SUFFIX,xn--ngstr-lra8j.com
+  - DOMAIN-SUFFIX,wns.windows.com
+  - DOMAIN-SUFFIX,msftconnecttest.com
+  - DOMAIN-SUFFIX,msftncsi.com
+  - DOMAIN-SUFFIX,ipv6.microsoft.com
+  - DOMAIN-SUFFIX,xboxlive.com
+  - DOMAIN-SUFFIX,rewards.bing.com
+  - DOMAIN-SUFFIX,api.onedrive.com
+  - DOMAIN-SUFFIX,stun.isp.net.au
+  - DOMAIN-SUFFIX,fwa.lifesizecloud.com
+  - DOMAIN-SUFFIX,stun.freeswitch.org
+  - DOMAIN-SUFFIX,stun.voip.blackberry.com
+  - DOMAIN-SUFFIX,stun.nextcloud.com
+  - DOMAIN-SUFFIX,stun.radiojar.com
+  - DOMAIN-SUFFIX,stun.sonetel.com
+  - DOMAIN-SUFFIX,stun.syncthing.net
+  - DOMAIN-SUFFIX,stun.hot-chilli.net
+  - DOMAIN-SUFFIX,stun.fitauto.ru
+  - DOMAIN-SUFFIX,stun.miwifi.com
+  - DOMAIN-SUFFIX,ghproxy.net
+  - DOMAIN-SUFFIX,gh-proxy.com
+  - DOMAIN-SUFFIX,ghfast.top
+  - DOMAIN-SUFFIX,ncbi.nlm.nih.gov
+  - DOMAIN-SUFFIX,crossref.org
