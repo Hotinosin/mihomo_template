@@ -7,7 +7,8 @@
 
 - `Company99-Config-FakeIP-Template.yaml`：推荐主模板。保留 Fake-IP，并用 `nameserver-policy` 对交易所、AI、GFW、GitHub、Google、Telegram 等敏感域名指定可信 DoH。适合更重视 DNS 污染规避和规则精细度的场景。
 - `Company99-Config-FakeIP-FilterOnly-Template.yaml`：保守基础模板。保留 Fake-IP 的过滤名单，但不主动对敏感域名做 `nameserver-policy` 分流。适合优先稳定、少改 DNS 行为的场景。
-- `Company-Config-FakeIP-Template.yaml`：Company 版本模板。整体与 Company99 策略版接近，但代理提供者命名和 Akilo 节点组更少。
+- `Company-Config-FakeIP-Template.yaml`：Company 版本模板。整体与 Company99 策略版接近，使用 Company 专属节点分组。
+- `Company-Config-RedirHost-Template.yaml`：以 Company 版本模板为蓝本的 Redir-Host 版本。保留 `nameserver-policy`，但不使用 Fake-IP 过滤与缓存。
 - `Ho-Config-FakeIP-Template.yaml`：Ho 基准模板。开启 IPv6，保留 `find-process-mode: off`，代理分组同步 Company99 结构，但不引入 company 专用 rule-provider。
 
 ## 本地使用方式

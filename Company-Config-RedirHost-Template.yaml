@@ -1,0 +1,548 @@
+## 模板名称: Company-Config-RedirHost-Template.yaml
+## 模板版本: 2026.05.26
+## 修订日期: 2026-05-26
+
+## 入站端口配置 ---------------------------------------------------------------------------------------------------
+mixed-port: 7890 # HTTP+Socks4混合，Win下的系统代理端口
+socks-port: 1080 # Socks5，代理端口
+port: 8080 # HTTP，代理端口
+redir-port: 7891 # 非linux无效，redir 透明代理端口
+tproxy-port: 7892 # 非linux无效，tproxy 透明代理端口
+
+## 全局配置 ------------------------------------------------------------------------------------------------
+mode: rule # rule（规则）/ global（全局）/ direct（直连）
+allow-lan: true # 允许局域网连接
+bind-address: "*" # 监听的本地网卡IP地址，*为全部IP地址
+log-level: warning # 内核日志级别
+ipv6: false # 是否接受ipv6流量
+tcp-concurrent: true # TCP并发
+#interface-name: en0  # clash流量出站接口，即接口绑定
+find-process-mode: strict # 进程匹配模式（off:关闭，always:开启，strict自动），tun模式下无效
+lan-allowed-ips: # 允许连接的客户端IP，默认允许全部
+  - 0.0.0.0/0
+  - ::/0
+lan-disallowed-ips: # 禁止连接的IP，优先级高于allow白名单
+  - ~
+authentication: # http(s)/socks/mixed 的用户验证，格式："user1:pass1"，不写则禁止全部用户
+  - ~
+skip-auth-prefixes: # 白名单，允许跳过用户验证的IP
+  - ~
+unified-delay: true # 统一延迟计算，没啥卵用，就是界面好看，会对延迟自动选择策略造成影响
+#routing-mark: 6666  # 非linux无效，路由标记，为流量提供标记以供其他应用进行流量处理
+
+## TCP-KeepA-live配置 ------------------------------------------------------------------------------------------
+keep-alive-idle: 120 # 触发心跳包的链路无活动阈值，无活动后发送心跳包检测对端是否存活
+keep-alive-interval: 15 # 发送心跳包的间隔，无回应则最多重发9次后判断链路关闭
+disable-keep-alive: false # 禁用 keep alive，即允许长链接一直存在，安卓端会强制设定为true
+
+## API面板设置---------------------------------------------------------------------------------------------------
+external-controller: "[::]:9090" # API面板监听地址
+secret: "" #🔴API面板访问密钥
+external-ui: ui # API面板静态资源路径
+external-ui-name: zashboard # API面板名，配合路径拼接成路径，例如/ui/metacubexd
+external-ui-url: "https://ghfast.top/https://github.com/Zephyruso/zashboard/releases/latest/download/dist.zip" # API面板下载地址
+
+## 缓存设置
+profile:
+  store-selected: true # 缓存 API面板 对策略组的选择
+  store-fake-ip: false # redir-host 模式下无需缓存 fake-ip
+
+## 外部资源下载设置---------------------------------------------------------------------------------------------------
+# global-client-fingerprint: random # 已废弃，改为在 proxy-providers 中设置
+global-ua: clash.meta # 全局UA，默认为clash.meta
+etag-support: true # 资源下载的 ETag 支持，使重复资源不会重复下载
+geodata-mode: false # GEOIP数据模式，false:mmdb，true:dat，mmdb更新但有设备不支持
+geodata-loader: standard # GEO文件加载模式，默认memconservative（小内存设备模式，即分段加载geo数据而不是全部加载）
+geo-auto-update: true # GEO文件自动更新
+geo-update-interval: 168 # 更新间隔，小时
+geox-url: # GEO数据库下载地址，内核会按需下载，未被使用的数据库不会被下载，采用star最多的v2ray项目，修bug很快
+  geoip: "https://ghfast.top/https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/geoip.dat"
+  geosite: "https://ghfast.top/https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/geosite.dat"
+  mmdb: "https://ghfast.top/https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/country.mmdb"
+  asn: "https://ghfast.top/https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/GeoLite2-ASN.mmdb"
+
+## DNS设置---------------------------------------------------------------------------------------------------
+# 客户端发起网址A的DNS，到达mihomo的DNS模块，mihomo会使用下方的配置进行DNS，得到IP后返回给客户端
+# 客户端拿到IP后，再次对IP发起连接请求，此时请求会进入mihomo的规则匹配，根据匹配结果直连或者远端解析
+# 也就是说DNS解析实际上会发生两次，第一次的结果并不重要，第二次只要规则正确触发远程解析，绝不会污染和劫持
+# 但如果第一次拿到了0.0.0.0,127.0.0.1这样的错误IP，请求无法发给mihomo就会无法访问
+# 综上所述，配置DNS没有那么重要，只要保证首次解析不要得到0.0.0.0这样的错误IP即可
+
+public-dns: &public-dns # ✅国内/直连/代理节点解析使用国内 DNS
+  # - dhcp://wan
+  # - dhcp://eth3
+  - 119.29.29.29
+  - 223.5.5.5
+  # - 114.114.114.114
+
+secure-dns: &secure-dns # ✅策略版：敏感/代理域名使用可信 DoH，并通过默认代理组查询
+  # - https://doh.pub/dns-query
+  - https://dns.google/dns-query
+  - https://cloudflare-dns.com/dns-query
+  # - https://8.8.4.4/dns-query
+  # - https://1.1.1.1/dns-query
+
+dns:
+  enable: true # 启用 dns 模块，否则采用系统 DNS
+  listen: "[::]:1053" # DNS 监听端口
+  enhanced-mode: redir-host # ✅Redir-Host 模式，直接返回真实解析 IP
+  cache-algorithm: arc
+  prefer-h3: false
+  ipv6: false # ✅修改：与全局 ipv6:false 保持一致，避免解析 AAAA 但实际 IPv6 不通
+  use-hosts: true
+  use-system-hosts: true
+  respect-rules: false # ✅保留：不用全局 respect-rules，改用 nameserver-policy 精确控制
+
+  # DNS 解析策略段
+  default-nameserver: *public-dns # ✅用于解析 DoH 服务器域名，保持国内 DNS
+  proxy-server-nameserver: *public-dns # ✅代理节点域名解析固定国内 DNS，避免鸡蛋问题
+  direct-nameserver: *public-dns # ✅DIRECT 出口域名解析使用国内 DNS，保证国内 CDN/直连体验
+  direct-nameserver-follow-policy: false
+
+  nameserver-policy:
+    ## Crypto / 交易所 ---------------------------------------------------------------
+    # ✅这些域名指定可信 DNS，降低 redir-host 下真实 DNS 结果被污染的风险
+    "geosite:category-cryptocurrency": *secure-dns
+    "rule-set:company_custom_crypto": *secure-dns
+
+    ## AI ---------------------------------------------------------------------------
+    # ✅新增：AI 服务走可信 DoH
+    "geosite:openai": *secure-dns
+    "geosite:google-gemini": *secure-dns
+    "geosite:anthropic": *secure-dns
+    "geosite:cursor": *secure-dns
+    "geosite:category-ai-!cn": *secure-dns
+
+    ## 常见被污染 / 代理域名 ---------------------------------------------------------
+    # ✅新增：常见代理域名走可信 DoH
+    "geosite:gfw": *secure-dns
+    "geosite:google": *secure-dns
+    "geosite:github": *secure-dns
+    "geosite:youtube": *secure-dns
+    "geosite:telegram": *secure-dns
+    "geosite:x": *secure-dns
+    "geosite:tiktok": *secure-dns
+    "geosite:category-social-media-!cn": *secure-dns
+    "rule-set:company_custom_rules": *secure-dns
+    "rule-set:custom_rules": *secure-dns
+
+    ## 国内 / 直连 / 局域网 ----------------------------------------------------------
+    # ✅新增：国内与直连域名显式走国内 DNS
+    "geosite:private": *public-dns
+    "geosite:cn": *public-dns
+    "geosite:geolocation-cn": *public-dns
+    "geosite:apple": *public-dns
+    "geosite:microsoft": *public-dns
+    "geosite:win-update": *public-dns
+    "geosite:alibaba": *public-dns
+    "geosite:tencent": *public-dns
+    "geosite:tencent-games": *public-dns
+    "geosite:onedrive": *public-dns
+    "geosite:bilibili": *public-dns
+    "geosite:bilibili-cdn": *public-dns
+    "geosite:bytedance": *public-dns
+    "geosite:category-cdn-cn": *public-dns
+    "rule-set:custom_direct": *public-dns
+    "rule-set:custom_ddns": *public-dns
+    "rule-set:company_custom_direct": *public-dns
+
+  nameserver: *public-dns # ✅默认兜底仍走国内 DNS；需要代理的敏感域名由 nameserver-policy 接管
+  # fallback: # 不使用 fallback，避免 DNS 泄露和复杂回退逻辑
+
+## hosts设置---------------------------------------------------------------------------------------------------
+hosts:
+  "mihomo.mihomo": 127.0.0.1
+  "mongo.lan": 192.168.100.42
+  "vcenter.lan": 192.179.100.4
+  "esxi-synolgy.xbx.ops": 192.168.100.102
+  "synolgy.xbx.ops": 192.168.100.112
+  "truenas.xbx.ops": 192.168.100.30
+  "guoxin-bmc.xbx.ops": 192.168.100.11
+  "vm-op1.xbx.ops": 192.168.3.1
+  "vm-op2.xbx.ops": 192.168.4.1
+  "vm-op3.xbx.ops": 192.168.5.1
+  "vm-op99.xbx.ops": 192.168.99.1
+  "ikuai.xbx.ops": 192.168.100.1
+  "esxi-5.xbx.ops": 192.168.100.5
+  "esxi-6.xbx.ops": 192.168.100.6
+  "esxi-7.xbx.ops": 192.168.100.7
+  "esxi-8.xbx.ops": 192.168.100.8
+  "airflow.qtcls.cn": 192.168.2.5
+
+## 嗅探设置---------------------------------------------------------------------------------------------------
+sniffer: # 嗅探，获取SNI中的域名，使mihomo能够反解未经自己DNS的IP请求的域名，来匹配域名规则
+  enable: true # 启用sniffer，除非使用非mihomo的DNS，否则无需启用
+  force-dns-mapping: true # 对redir-host类型识别的流量进行强制嗅探
+  parse-pure-ip: true # 对所有未获取到域名的流量进行强制嗅探
+  override-destination: true # 是否使用嗅探结果作为实际访问，默认为 true
+  sniff: # 需要嗅探的协议类型，仅支持 HTTP/TLS/QUIC
+    TLS: # TLS协议
+      ports: # 端口白名单，只针对下列端口嗅探
+        - 443
+        - 8443
+        - 9443
+    HTTP: # HTTP协议
+      ports: # 端口白名单，只针对下列端口嗅探
+        - 80
+        - 8080-8880
+        - 9443
+    QUIC: # QUIC协议
+      ports: # 端口白名单，只针对下列端口嗅探
+        - 443
+        - 8443
+        - 9443
+  force-domain: # 强制嗅探的域名
+    - "+.amazonaws.com"
+    - "+.media.dssott.com"
+    - "+.aicoin.com"
+    - "+.binance.com"
+    - "+.okx.com"
+    - "+.anthropic.com"
+  skip-domain: # 需要跳过嗅探的域名，主要解决部分站点sni字段非域名，导致嗅探结果异常的问题，如米家设备，也可针对使用内核进行DNS的域名节省开销（这些由内核解析的域名因为保存有对照表，无需嗅探）
+    - "+.apple.com"
+    - Mijia Cloud
+    - dlg.io.mi.com
+    - "+.oray.com"
+    - "+.sunlogin.net"
+    - "geosite:geolocation-cn"
+  #skip-src-address: # 需要跳过嗅探的源地址
+  #skip-dst-address: # 需要跳过嗅探的目的地址
+
+## tun设置---------------------------------------------------------------------------------------------------
+tun:
+  enable: false # 启用Tun接口，tun性能低开销大，除非必须否则不建议使用
+  stack: mixed # TUN 堆栈模式,建议 mixed（TCP：system，UDP：Gvisor），对于Windows开启防火墙后需要手动放行内核，否则只能使用Gvisor
+  device: utun0 # TUN 网卡名，MacOS 只能 utun 开头
+  auto-route: false # 核心自动设置全局路由防火墙规则，会与插件的防火墙规则冲突，导致无法正常上网/代理
+  auto-detect-interface: false # 核心自动选择流量的出接口（默认wan口），会与插件冲突
+  dns-hijack: # dns 劫持，将匹配到的连接导入内部 dns 模块，不书写协议则默认 udp://
+    - any:53
+    - tcp://any:53
+  mtu: 9000 # MTU
+  gso: true # 通用分段卸载，仅支持Linux，提高性能
+  gso-max-size: 65536 # 通用分段卸载包的最大长度
+  exclude-package: # 安卓排除的包名
+    - com.tencent.mobileqq # QQ
+    - com.tencent.mm # 微信
+    - com.tencent.androidqqmail # QQ邮箱
+    - com.xingin.xhs # 小红书
+    - idm.internet.download.manager # 1DM下载器
+    - com.sausage.download # 浩克下载
+    - com.eg.android.AlipayGphone # 支付宝
+    - com.sgcc.wsgw.cn # 网上国网
+    - com.taobao.taobao # 淘宝
+    - com.jingdong.app.mall # 京东
+    - com.MobileTicket # 铁路12306
+    - com.chinamworld.main # 中国建设银行
+    - com.jd.jrapp # 京东金融
+  #auto-redirect: true # 仅Linux有效，自动配置 iptables/nftables 以重定向 TCP 连接，需要auto-route: true，与插件设置冲突
+  #strict-route: false # 将所有连接路由到 tun 来防止泄漏，但你的设备将无法其他设备被访问，严重拖慢Windows访问速度，可能造成虚拟机运行异常
+  #endpoint-independent-nat: false # 独立于端点的 NAT，性能可能下降，不建议不需要时开启
+
+## 代理提供者设置---------------------------------------------------------------------------------------------------
+proxy-providers-general: &proxy-providers-general # 代理提供者通用配置
+  type: http # 类型，可选http/file/inline
+  interval: 259200 # 更新间隔，单位秒
+  proxy: DIRECT # http类型更新时使用的代理组，不建议设置代理，如果你的机场需要代理才能订阅，那先有鸡还是先有蛋？
+  size-limit: 0 # 文件大小限制，0为不限制
+  exclude-filter: "(?i)客户端|官网|每月刷新订阅|机场|到期|https://|剩余流量"
+  override: # 同名覆盖
+    #tfo: false # 启用TCP Fast Open，一般都不支持
+    #mptcp: false # 启用TCP Multi Path，一般都不支持
+    #udp: true # 启用UDP
+    #udp-over-tcp: false # 启用UDP over TCP
+    skip-cert-verify: false # 跳过证书验证
+    client-fingerprint: chrome # 替代已废弃的 global-client-fingerprint
+    #down: "50 Mbps" # 下行限速
+    #up: "10 Mbps" # 上行限速
+    #ip-version: dual # 可选dual/ipv4/ipv6/ipv4-prefer/ipv6-prefer，即优先v4或v6，仅v4或v6
+
+proxy-providers:
+  template-placeholder: # 模板校验占位 provider，Worker 注入真实 provider 后可保留或移除
+    type: inline
+    payload:
+      - name: template-placeholder-direct
+        type: direct
+  #❗provider占位1
+  #❗provider占位2
+  #❗provider占位3
+  #❗provider占位4
+
+## 代理组设置---------------------------------------------------------------------------------------------------
+use-all-proxy-providers: &use-all-proxy-providers # 代理组通用配置
+  use:
+    - template-placeholder
+    #❗use-provider占位1
+    #❗use-provider占位2
+    #❗use-provider占位3
+    #❗use-provider占位4
+
+
+health-check-general: &health-check-general # 代理组健康检查通用配置
+  <<: *use-all-proxy-providers
+  url: https://www.gstatic.com/generate_204
+  expected-status: 204
+  interval: 60 # 健康检查间隔
+  tolerance: 300 # 延迟容忍度，单位ms
+  lazy: true # 未选中当前组时不进行测试
+  timeout: 5000 # 健康检查超时，单位ms
+  max-failed-times: 6 # 失败次数，超过则执行一次强制健康检查
+  filter: "^(?!.*(ink|看这里|到期|机场|地址|流量|订阅|计费|日本)).*$"
+
+proxy-group: &proxy-group
+  proxies:
+    - ✅默认代理
+    - ⚠️故障切换
+    - ⚠️TW-故障切换
+    - 🇨🇳Company-TW
+    - 🇸🇬Company-SG
+    - 🇯🇵Company-JP
+    - 🇭🇰香港节点
+    - 🇨🇳台湾节点
+    - 🇸🇬狮城节点
+    - 🇺🇲美国节点
+    - 🖐️手动切换
+    - DIRECT
+
+default-direct: &default-direct # 默认直连组
+  proxies:
+    - DIRECT
+    - ✅默认代理
+
+default-proxy: &default-proxy # 默认代理组
+  proxies:
+    - ✅默认代理
+    - DIRECT
+
+
+
+proxy-groups:
+ ##################################
+  - name: ✅默认代理
+    type: select
+    proxies:
+      - ⚠️故障切换
+      - ⚠️TW-故障切换
+      - 🇨🇳Company-TW
+      - 🇸🇬Company-SG
+      - 🇯🇵Company-JP
+      - 🇭🇰香港节点
+      - 🇨🇳台湾节点
+      - 🇸🇬狮城节点
+      - 🇺🇲美国节点
+      - 🖐️手动切换
+      - DIRECT
+
+  - name: ⚠️故障切换
+    type: fallback
+    proxies:
+      - ⚠️TW-故障切换
+      - 🇸🇬狮城节点
+      - 🇭🇰香港节点
+      - 🖐️手动切换
+
+  - name: ⚠️TW-故障切换
+    type: fallback
+    proxies:
+      - 🇨🇳Company-TW
+      - 🇨🇳台湾节点
+
+  - name: 🖐️手动切换
+    type: select
+    <<: *use-all-proxy-providers
+    filter: "(?=.*(香港|新加坡|台湾|美国))^((?!(x2|中国|备用|到期|机场|地址|流量|订阅|计费)).)*$"
+
+  - name: 🇭🇰香港节点
+    type: url-test
+    <<: *health-check-general
+    filter: "(?=.*(港|HK|hk|Hong Kong|HongKong|hongkong|(?i)Hong))^((?!(x2|台|日|韩|新|深|美|倍)).)*$"
+
+  - name: 🇨🇳台湾节点
+    type: url-test
+    <<: *health-check-general
+    filter: "(?=.*(台|新北|彰化|TW|Taiwan))^((?!(x2|Company|港|美|日|韩|新|倍)).)*$"
+
+  - name: 🇨🇳Company-TW
+    type: url-test
+    <<: *health-check-general
+    filter: "(?=.*(Company|台|新北|彰化|TW|Taiwan))^((?!(JP|SG|US|FNF|港|美|日|韩|新|倍)).)*$"
+
+  - name: 🇸🇬Company-SG
+    type: url-test
+    <<: *health-check-general
+    filter: "(?=.*(Company|新加坡|SG|(?i)Singapore))^((?!(TW|JP|US|FNF|港|台|美|日|韩|倍)).)*$"
+
+  - name: 🇯🇵Company-JP
+    type: url-test
+    <<: *health-check-general
+    filter: "(?=.*(Company|JP|日本|东京|大阪))^((?!(TW|SG|US|FNF|港|美|台|韩|新|倍)).)*$"
+
+  - name: 🇸🇬狮城节点
+    type: url-test
+    <<: *health-check-general
+    filter: "(?=.*(新加坡|SG|(?i)Singapore))^((?!(Company|x2|港|台|韩|日|美|倍)).)*$"
+
+  - name: 🇺🇲美国节点
+    type: url-test
+    <<: *health-check-general
+    filter: "(?=.*(美|US|(?i)States|America))^((?!(x2|港|台|日|韩|新|倍)).)*$"
+
+  - name: 🅰️Ai
+    type: select
+    <<: *proxy-group
+
+  - name: 💰Crypto
+    type: select
+    <<: *proxy-group
+
+  - name: 📱国际社交软件
+    type: select
+    <<: *default-proxy
+
+  - name: 🧱GFW
+    type: select
+    <<: *default-proxy
+
+  - name: 🎮Steam
+    type: select
+    <<: *default-direct
+
+  - name: Ⓜ️微软服务
+    type: select
+    <<: *default-direct
+
+  - name: ✈️Speedtest
+    type: select
+    <<: *default-direct
+
+  - name: 🅿️IP-Check
+    type: select
+    <<: *default-proxy
+
+  - name: 🌐默认直连
+    type: select
+    <<: *default-direct
+
+  - name: 🐟漏网之鱼
+    type: select
+    <<: *default-direct
+
+
+## 规则提供者设置---------------------------------------------------------------------------------------------------
+rule-providers-general: &rule-providers-general
+  type: http
+  behavior: classical
+  format: yaml
+  interval: 86400
+
+rule-providers:
+  company_custom_crypto:
+    <<: *rule-providers-general
+    url: https://raw.githubusercontent.com/Hotinosin/mihomo_template/main/rule_set/company_custom_crypto.yaml
+    path: ./providers/rule/rule-provider_payload/company_custom_crypto.yaml
+
+  company_custom_direct:
+    <<: *rule-providers-general
+    url: https://raw.githubusercontent.com/Hotinosin/mihomo_template/main/rule_set/company_custom_direct.yaml
+    path: ./providers/rule/rule-provider_company_custom_direct.yaml
+
+  company_custom_rules:
+    <<: *rule-providers-general
+    url: https://raw.githubusercontent.com/Hotinosin/mihomo_template/main/rule_set/company_custom_rules.yaml
+    path: ./providers/rule/rule-provider_company_custom_rules.yaml
+
+  custom_rules:
+    <<: *rule-providers-general
+    url: https://raw.githubusercontent.com/Hotinosin/mihomo_template/main/rule_set/custom_rules.yaml
+    path: ./providers/rule/rule-provider_custom_rules.yaml
+
+  custom_direct:
+    <<: *rule-providers-general
+    url: https://raw.githubusercontent.com/Hotinosin/mihomo_template/main/rule_set/custom_direct.yaml
+    path: ./providers/rule/rule-provider_custom_direct.yaml
+
+  custom_ddns:
+    <<: *rule-providers-general
+    url: https://raw.githubusercontent.com/Hotinosin/mihomo_template/main/rule_set/custom_ddns.yaml
+    path: ./providers/rule/rule-provider_custom_ddns.yaml
+
+## 路由规则设置---------------------------------------------------------------------------------------------------
+rules:
+  #### 对于必须直连者直接使用direct写死，其他尽可能使用代理组以方便面板控制以及切换测试
+
+  # 禁用所有代理的QUIC，防止速度不佳和IP泄露，不包括国内网站
+  - AND,(AND,(DST-PORT,443),(NETWORK,UDP)),(NOT,((GEOSITE,geolocation-cn))),REJECT # 禁用域名的QUIC，防止速度不佳和IP泄露
+  - AND,(AND,(DST-PORT,443),(NETWORK,UDP)),(NOT,((GEOIP,cn))),REJECT # 禁用IP的QUIC，防止速度不佳和IP泄露
+
+  # 私有地址绕过块
+  - GEOSITE,private,DIRECT # 私有地址直连
+  - GEOIP,private,DIRECT,no-resolve # 私有地址直连
+
+  - GEOSITE,CATEGORY-SPEEDTEST,✈️Speedtest
+  - GEOSITE,CATEGORY-IP-GEO-DETECT,🅿️IP-Check
+
+  # Direct 直连规则
+  - GEOSITE,alibaba,🌐默认直连
+  - GEOSITE,tencent,🌐默认直连
+  - GEOSITE,tencent-games,🌐默认直连
+  - GEOSITE,apple,🌐默认直连
+  - GEOSITE,onedrive,🌐默认直连
+  - GEOSITE,bilibili,🌐默认直连
+  - GEOSITE,bilibili-cdn,🌐默认直连
+  - GEOSITE,bytedance,🌐默认直连
+  - RULE-SET,company_custom_direct,🌐默认直连
+  - RULE-SET,custom_direct,🌐默认直连
+  - RULE-SET,custom_ddns,🌐默认直连
+  # 游戏相关
+  - GEOSITE,synology,🌐默认直连 # 群晖服务，包括QC
+  - GEOSITE,category-game-platforms-download,🌐默认直连 # 各类游戏平台下载域名，包括steam下载
+  - GEOSITE,category-cas,🌐默认直连 # 证书颁发机构，直连以防止证书错误
+
+
+  # Coin 相关规则块
+  - GEOSITE,category-cryptocurrency,💰Crypto
+  - GEOSITE,yahoo,💰Crypto
+  - RULE-SET,company_custom_crypto,💰Crypto
+
+  # AI相关
+  - GEOSITE,openai,🅰️Ai # openai服务
+  - GEOSITE,google-gemini,🅰️Ai # gemini
+  - GEOSITE,cursor,🅰️Ai # cursor
+  - GEOSITE,anthropic,🅰️Ai # anthropic
+  - GEOSITE,category-ai-!cn,🅰️Ai # 中国外AI
+
+  # 常见外网服务
+  - RULE-SET,company_custom_rules,✅默认代理
+  - RULE-SET,custom_rules,✅默认代理
+  - GEOSITE,github,✅默认代理
+  - GEOSITE,youtube,✅默认代理
+  - GEOSITE,google,✅默认代理
+
+  # 📱国际社交软件
+  - GEOSITE,telegram,📱国际社交软件 # Telegram服务
+  - GEOIP,telegram,📱国际社交软件,no-resolve # Telegram服务IP
+  - GEOSITE,x,📱国际社交软件 # 推特,x
+  - GEOSITE,whatsapp,📱国际社交软件
+  - GEOSITE,tiktok,📱国际社交软件
+  - GEOSITE,category-social-media-!cn,📱国际社交软件 # 国外社交软件
+
+  #### 代理规则块，按照使用频率/规则集大小排序
+  # 其他
+  - GEOSITE,tmdb,✅默认代理 # TMDB服务，影视刮削，直连访问缓慢经常失败
+  # 微软相关
+  - GEOSITE,win-extra,Ⓜ️微软服务 # outlook域名
+  - GEOSITE,win-update,Ⓜ️微软服务 # 微软更新域名
+  # 编程-docker相关
+  - GEOSITE,category-dev@!cn,✅默认代理
+  - GEOSITE,category-container,✅默认代理 # 各种容器服务
+
+
+  #### 兜底规则块，一般精细的分流规则应在其上
+  - GEOSITE,gfw,🧱GFW # GFW兜底
+  - GEOSITE,microsoft,Ⓜ️微软服务 # 微软服务，放于GFW后是因为github等在GFW中需要代理
+  - GEOSITE,steam,🎮Steam # Steam，默认直连，换区时修改此处，放于GFW之后是因创意工坊需始终代理
+  - GEOSITE,geolocation-cn,🌐默认直连 # 地理位置在中国的域名，不包括谷歌在中国的域名避免谷歌商店下载问题
+  - GEOSITE,cn,🌐默认直连
+  - GEOIP,google,✅默认代理,no-resolve
+  - GEOIP,cn,🌐默认直连,no-resolve # 中国IP
+  - MATCH,🐟漏网之鱼 # 漏网之鱼
