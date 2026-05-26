@@ -284,9 +284,10 @@ proxy-group: &proxy-group
     - ✅默认代理
     - ⚠️故障切换
     - ⚠️TW-故障切换
-    - 🇨🇳Akilo-TW
-    - 🇯🇵Akilo-JP
-    - 🇺🇸Akilo-US
+    - 🇨🇳Company-TW
+    - 🇸🇬Company-SG
+    - 🇯🇵Company-JP
+    - 🇺🇸Company-US
     - 🇭🇰香港节点
     - 🇨🇳台湾节点
     - 🇸🇬狮城节点
@@ -313,9 +314,10 @@ proxy-groups:
     proxies:
       - ⚠️故障切换
       - ⚠️TW-故障切换
-      - 🇨🇳Akilo-TW
-      - 🇯🇵Akilo-JP
-      - 🇺🇸Akilo-US
+      - 🇨🇳Company-TW
+      - 🇸🇬Company-SG
+      - 🇯🇵Company-JP
+      - 🇺🇸Company-US
       - 🇭🇰香港节点
       - 🇨🇳台湾节点
       - 🇸🇬狮城节点
@@ -334,7 +336,7 @@ proxy-groups:
   - name: ⚠️TW-故障切换
     type: fallback
     proxies:
-      - 🇨🇳Akilo-TW
+      - 🇨🇳Company-TW
       - 🇨🇳台湾节点
 
   - name: 🖐️手动切换
@@ -350,32 +352,37 @@ proxy-groups:
   - name: 🇨🇳台湾节点
     type: url-test
     <<: *health-check-general
-    filter: "(?=.*(台|新北|彰化|TW|Taiwan))^((?!(x2|Akilo|港|美|日|韩|新|倍)).)*$"
+    filter: "(?=.*(台|新北|彰化|TW|Taiwan))^((?!(x2|Company|港|美|日|韩|新|倍)).)*$"
 
-  - name: 🇨🇳Akilo-TW
+  - name: 🇨🇳Company-TW
     type: url-test
     <<: *health-check-general
-    filter: "(?=.*(Akilo|台|新北|彰化|TW|Taiwan))^((?!(JP|US|FNF|港|美|日|韩|新|倍)).)*$"
+    filter: "(?=.*(Company|台|新北|彰化|TW|Taiwan))^((?!(JP|SG|US|FNF|港|美|日|韩|新|倍)).)*$"
 
-  - name: 🇯🇵Akilo-JP
+  - name: 🇸🇬Company-SG
     type: url-test
     <<: *health-check-general
-    filter: "(?=.*(Akilo|JP|日本|东京|大阪))^((?!(TW|US|FNF|港|美|台|韩|新|倍)).)*$"
+    filter: "(?=.*(Company|新加坡|SG|(?i)Singapore))^((?!(TW|JP|US|FNF|港|台|美|日|韩|倍)).)*$"
 
-  - name: 🇺🇸Akilo-US
+  - name: 🇯🇵Company-JP
     type: url-test
     <<: *health-check-general
-    filter: "(?=.*(Akilo|US))^((?!(TW|JP|FNF|港|日|台|韩|新|倍)).)*$"
+    filter: "(?=.*(Company|JP|日本|东京|大阪))^((?!(TW|SG|US|FNF|港|美|台|韩|新|倍)).)*$"
+
+  - name: 🇺🇸Company-US
+    type: url-test
+    <<: *health-check-general
+    filter: "(?=.*(Company|US))^((?!(TW|SG|JP|FNF|港|日|台|韩|新|倍)).)*$"
 
   - name: 🇸🇬狮城节点
     type: url-test
     <<: *health-check-general
-    filter: "(?=.*(新加坡|SG|(?i)Singapore))^((?!(Akilo|x2|港|台|韩|日|美|倍)).)*$"
+    filter: "(?=.*(新加坡|SG|(?i)Singapore))^((?!(Company|x2|港|台|韩|日|美|倍)).)*$"
 
   - name: 🇺🇲美国节点
     type: url-test
     <<: *health-check-general
-    filter: "(?=.*(美|US|(?i)States|America))^((?!(Akilo|x2|港|台|日|韩|新|倍)).)*$"
+    filter: "(?=.*(美|US|(?i)States|America))^((?!(Company|x2|港|台|日|韩|新|倍)).)*$"
 
   - name: 🅰️Ai
     type: select

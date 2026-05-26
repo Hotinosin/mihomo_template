@@ -261,6 +261,7 @@ proxy-group: &proxy-group
     - ⚠️故障切换
     - ⚠️TW-故障切换
     - 🇨🇳Akilo-TW
+    - 🇸🇬Akilo-SG
     - 🇯🇵Akilo-JP
     - 🇺🇸Akilo-US
     - 🇭🇰香港节点
@@ -290,6 +291,7 @@ proxy-groups:
       - ⚠️故障切换
       - ⚠️TW-故障切换
       - 🇨🇳Akilo-TW
+      - 🇸🇬Akilo-SG
       - 🇯🇵Akilo-JP
       - 🇺🇸Akilo-US
       - 🇭🇰香港节点
@@ -331,17 +333,22 @@ proxy-groups:
   - name: 🇨🇳Akilo-TW
     type: url-test
     <<: *health-check-general
-    filter: "(?=.*(Akilo|台|新北|彰化|TW|Taiwan))^((?!(JP|US|FNF|港|美|日|韩|新|倍)).)*$"
+    filter: "(?=.*(Akilo|台|新北|彰化|TW|Taiwan))^((?!(JP|SG|US|FNF|港|美|日|韩|新|倍)).)*$"
+
+  - name: 🇸🇬Akilo-SG
+    type: url-test
+    <<: *health-check-general
+    filter: "(?=.*(Akilo|新加坡|SG|(?i)Singapore))^((?!(TW|JP|US|FNF|港|台|美|日|韩|倍)).)*$"
 
   - name: 🇯🇵Akilo-JP
     type: url-test
     <<: *health-check-general
-    filter: "(?=.*(Akilo|JP|日本|东京|大阪))^((?!(TW|US|FNF|港|美|台|韩|新|倍)).)*$"
+    filter: "(?=.*(Akilo|JP|日本|东京|大阪))^((?!(TW|SG|US|FNF|港|美|台|韩|新|倍)).)*$"
 
   - name: 🇺🇸Akilo-US
     type: url-test
     <<: *health-check-general
-    filter: "(?=.*(Akilo|US))^((?!(TW|JP|FNF|港|日|台|韩|新|倍)).)*$"
+    filter: "(?=.*(Akilo|US))^((?!(TW|SG|JP|FNF|港|日|台|韩|新|倍)).)*$"
 
   - name: 🇸🇬狮城节点
     type: url-test
