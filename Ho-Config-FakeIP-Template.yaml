@@ -1,7 +1,7 @@
 ## 模板名称: Ho-Config-FakeIP-Template.yaml
-## 模板版本: 2026.05.13
+## 模板版本: 2026.06.01
 ## 基准来源: Ho-Config
-## 修订日期: 2026-05-13
+## 修订日期: 2026-06-01
 
 ## 入站端口配置 ---------------------------------------------------------------------------------------------------
 mixed-port: 7890 # HTTP+Socks4混合，Win下的系统代理端口
@@ -79,20 +79,13 @@ public-dns: &public-dns # 快速的DNS，不关心是否存在污染和劫持，
   - 223.5.5.5
   # - 114.114.114.114
 
-doq-dns: &doq-dns
-  - quic://dns.alidns.com:853
-  - https://dns.alidns.com/dns-query
-  - 223.5.5.5
-  - 119.29.29.29
-
 secure-dns: &secure-dns # 加密的DNS，必须避免被解析为0.0.0.0等污染，为域名时必须搭配default-nameserver使用
   - https://dns.google/dns-query
   - https://cloudflare-dns.com/dns-query
   # - https://8.8.4.4/dns-query
   # - https://1.1.1.1/dns-query
 
-foreign-doq: &foreign-doq
-  - quic://dns.quad9.net:853
+secure-doh: &secure-doh
   - https://dns.google/dns-query
   - https://cloudflare-dns.com/dns-query
 
@@ -139,9 +132,9 @@ dns:
   # redir-host配置段
   default-nameserver: *public-dns # 解析DNS服务器域名的DNS，可以加密但必须为IP，如果不用DNS服务器的域名则无需配置
   proxy-server-nameserver: *public-dns # 解析代理节点域名的DNS，不填则遵循namepolicy
-  direct-nameserver: *doq-dns # 解析direct出口域名的DNS，不填则遵循namepolicy，nameserver和fallback
+  direct-nameserver: *public-dns # 解析direct出口域名的DNS，不填则遵循namepolicy，nameserver和fallback
   direct-nameserver-follow-policy: false # direct出口域名是否遵循nameserver-policy，默认false则使用direct-nameserver，仅当direct-nameserver不为空时生效
-  nameserver: *foreign-doq # 兜底默认DNS组，未命中 nameserver-policy 时启用
+  nameserver: *secure-doh # 兜底默认DNS组，未命中 nameserver-policy 时启用
   # fallback: # 过时的配置，已被 nameserver-policy 取代，使用时会产生DNS泄露
 
 ## hosts设置---------------------------------------------------------------------------------------------------
