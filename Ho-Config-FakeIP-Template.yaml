@@ -79,6 +79,14 @@ public-dns: &public-dns # 快速的DNS，不关心是否存在污染和劫持，
   - 223.5.5.5
   # - 114.114.114.114
 
+
+alidns-dns: &alidns-dns
+  - quic://dns.alidns.com:853
+  - https://dns.alidns.com/dns-query
+  - 223.5.5.5
+  - 223.6.6.6
+  - 119.29.29.29
+
 secure-dns: &secure-dns # 加密的DNS，必须避免被解析为0.0.0.0等污染，为域名时必须搭配default-nameserver使用
   - https://dns.google/dns-query
   - https://cloudflare-dns.com/dns-query
@@ -136,6 +144,36 @@ dns:
   direct-nameserver-follow-policy: false # direct出口域名是否遵循nameserver-policy，默认false则使用direct-nameserver，仅当direct-nameserver不为空时生效
   nameserver: *secure-doh # 兜底默认DNS组，未命中 nameserver-policy 时启用
   # fallback: # 过时的配置，已被 nameserver-policy 取代，使用时会产生DNS泄露
+
+
+  # 国内 / 直连 / 局域网 / 自定义域名走 AliDNS 或 public-dns
+
+  nameserver-policy:
+    "geosite:private": *public-dns
+    "geosite:cn": *alidns-dns
+    "geosite:geolocation-cn": *alidns-dns
+    "geosite:geolocation-!cn@cn": *alidns-dns
+    "geosite:apple": *alidns-dns
+    "geosite:alibaba": *alidns-dns
+    "geosite:tencent": *alidns-dns
+    "geosite:tencent-games": *alidns-dns
+    "geosite:bilibili": *alidns-dns
+    "geosite:bilibili-cdn": *alidns-dns
+    "geosite:bytedance": *alidns-dns
+    "geosite:category-cdn-cn": *alidns-dns
+    "geosite:onedrive": *alidns-dns
+    "geosite:category-cas": *alidns-dns
+    "geosite:win-update": *alidns-dns
+    "geosite:category-game-platforms-download": *alidns-dns
+    "geosite:category-public-tracker": *alidns-dns
+    "rule-set:custom_direct": *alidns-dns
+    "rule-set:custom_ddns": *alidns-dns
+    "+.local": *public-dns
+    "+.lan": *public-dns
+    "+.home.arpa": *public-dns
+
+
+
 
 ## hosts设置---------------------------------------------------------------------------------------------------
 hosts: # 自定义hosts映射，可以在此处手动指定一些Fakeip地址以强制分流
