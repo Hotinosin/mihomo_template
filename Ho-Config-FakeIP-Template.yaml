@@ -199,12 +199,19 @@ sniffer: # 嗅探，获取SNI中的域名，使mihomo能够反解未经自己DNS
         - 443
         - 8443
   force-domain: # 强制嗅探的域名
+    - "+.openai.com"
+    - "+.chatgpt.com"
+    - "+.oaistatic.com"
+    - "+.oaiusercontent.com"
+    - "+.anthropic.com"
+    - "+.googleapis.com"
+    - "+.google.com"
+    - "+.gstatic.com"
     - "+.amazonaws.com"
     - "+.media.dssott.com"
     - "+.aicoin.com"
     - "+.binance.com"
     - "+.okx.com"
-    - "+.anthropic.com"
   skip-domain: # 需要跳过嗅探的域名，主要解决部分站点sni字段非域名，导致嗅探结果异常的问题，如米家设备，也可针对使用内核进行DNS的域名节省开销（这些由内核解析的域名因为保存有对照表，无需嗅探）
     - "+.apple.com"
     - Mijia Cloud
