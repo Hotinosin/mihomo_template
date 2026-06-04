@@ -293,12 +293,11 @@ proxy-group: &proxy-group
   proxies:
     - ✅默认代理
     - ⚠️故障切换
-    - ⚠️TW-故障切换
-    - 🇨🇳Company-TW
     - 🇸🇬Company-SG
     - 🇯🇵Company-JP
     - 🇭🇰香港节点
     - 🇨🇳台湾节点
+    - 🇯🇵日本节点
     - 🇸🇬狮城节点
     - 🇺🇲美国节点
     - 🖐️手动切换
@@ -322,12 +321,11 @@ proxy-groups:
     type: select
     proxies:
       - ⚠️故障切换
-      - ⚠️TW-故障切换
-      - 🇨🇳Company-TW
       - 🇸🇬Company-SG
       - 🇯🇵Company-JP
       - 🇭🇰香港节点
       - 🇨🇳台湾节点
+      - 🇯🇵日本节点
       - 🇸🇬狮城节点
       - 🇺🇲美国节点
       - 🖐️手动切换
@@ -336,21 +334,16 @@ proxy-groups:
   - name: ⚠️故障切换
     type: fallback
     proxies:
-      - ⚠️TW-故障切换
+      - 🇯🇵Company-JP
+      - 🇸🇬Company-SG
+      - 🇯🇵日本节点
       - 🇸🇬狮城节点
-      - 🇭🇰香港节点
       - 🖐️手动切换
-
-  - name: ⚠️TW-故障切换
-    type: fallback
-    proxies:
-      - 🇨🇳Company-TW
-      - 🇨🇳台湾节点
 
   - name: 🖐️手动切换
     type: select
     <<: *use-all-proxy-providers
-    filter: "(?=.*(香港|新加坡|台湾|美国))^((?!(x2|中国|备用|到期|机场|地址|流量|订阅|计费)).)*$"
+    filter: "(?=.*(香港|新加坡|日本|JP|(?i)Japan|美国))^((?!(x2|中国|台湾|台|TW|(?i)Taiwan|备用|到期|机场|地址|流量|订阅|计费)).)*$"
 
   - name: 🇭🇰香港节点
     type: url-test
@@ -362,11 +355,6 @@ proxy-groups:
     <<: *health-check-general
     filter: "(?=.*(台|新北|彰化|TW|Taiwan))^((?!(x2|Company|港|美|日|韩|新|倍)).)*$"
 
-  - name: 🇨🇳Company-TW
-    type: url-test
-    <<: *health-check-general
-    filter: "(?=.*(Company|台|新北|彰化|TW|Taiwan))^((?!(JP|SG|US|FNF|港|美|日|韩|新|倍)).)*$"
-
   - name: 🇸🇬Company-SG
     type: url-test
     <<: *health-check-general
@@ -376,6 +364,11 @@ proxy-groups:
     type: url-test
     <<: *health-check-general
     filter: "(?=.*(Company|JP|日本|东京|大阪))^((?!(TW|SG|US|FNF|港|美|台|韩|新|倍)).)*$"
+
+  - name: 🇯🇵日本节点
+    type: url-test
+    <<: *health-check-general
+    filter: "(?=.*(日本|东京|大阪|JP|(?i)Japan))^((?!(Company|x2|港|台|韩|新|美|倍)).)*$"
 
   - name: 🇸🇬狮城节点
     type: url-test
