@@ -308,8 +308,6 @@ proxy-group: &proxy-group
   proxies:
     - ✅默认代理
     - ⚠️故障切换
-    - ⚠️TW-故障切换
-    - 🇨🇳Akilo-TW
     - 🇺🇸Ho-US
     - 🇯🇵Company-JP
     - 🇸🇬Company-SG
@@ -339,8 +337,6 @@ proxy-groups:
     type: select
     proxies:
       - ⚠️故障切换
-      - ⚠️TW-故障切换
-      - 🇨🇳Akilo-TW
       - 🇺🇸Ho-US
       - 🇯🇵Company-JP
       - 🇸🇬Company-SG
@@ -362,12 +358,6 @@ proxy-groups:
       - 🇸🇬狮城节点
       - 🖐️手动切换
 
-  - name: ⚠️TW-故障切换
-    type: fallback
-    proxies:
-      - 🇨🇳Akilo-TW
-      - 🇨🇳台湾节点
-
   - name: 🖐️手动切换
     type: select
     <<: *use-all-proxy-providers
@@ -382,11 +372,6 @@ proxy-groups:
     type: url-test
     <<: *health-check-general
     filter: "(?=.*(台|新北|彰化|TW|Taiwan))^((?!(x2|Akilo|港|美|日|韩|新|倍)).)*$"
-
-  - name: 🇨🇳Akilo-TW
-    type: url-test
-    <<: *health-check-general
-    filter: "(?=.*(Akilo|台|新北|彰化|TW|Taiwan))^((?!(JP|SG|US|FNF|港|美|日|韩|新|倍)).)*$"
 
   - name: 🇸🇬Company-SG
     type: url-test
