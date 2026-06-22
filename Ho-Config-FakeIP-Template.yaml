@@ -179,7 +179,7 @@ dns:
 hosts: # 自定义hosts映射，可以在此处手动指定一些Fakeip地址以强制分流
   "mihomo.mihomo": 127.0.0.1
   "mongo.lan": 192.168.100.42
-  "vcenter.lan": 192.179.100.4
+  "vcenter.lan": 192.168.100.4
   "esxi-synolgy.xbx.ops": 192.168.100.102
   "synolgy.xbx.ops": 192.168.100.112
   "truenas.xbx.ops": 192.168.100.30
