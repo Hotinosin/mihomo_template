@@ -75,17 +75,17 @@ geox-url: # GEO数据库下载地址，内核会按需下载，未被使用的�
 public-dns: &public-dns # 快速的DNS，不关心是否存在污染和劫持，只要快就好了
   # - dhcp://wan # 指定网卡DHCP获取的DNS，硬路由的wan口网卡名一般为wan
   # - dhcp://eth3 # 软路由的wan口一般为最后一张网卡，eth0,eth1 双网口就是eth1
-  - 119.29.29.29
   - 223.5.5.5
+  - 119.29.29.29
   # - 114.114.114.114
 
 
 alidns-dns: &alidns-dns
-  - quic://dns.alidns.com:853
-  - https://dns.alidns.com/dns-query
+  # - quic://dns.alidns.com:853
+  # - https://dns.alidns.com/dns-query
   - 223.5.5.5
   - 223.6.6.6
-  - 119.29.29.29
+  # - 119.29.29.29
 
 secure-dns: &secure-dns # 加密的DNS，必须避免被解析为0.0.0.0等污染，为域名时必须搭配default-nameserver使用
   - https://dns.google/dns-query
