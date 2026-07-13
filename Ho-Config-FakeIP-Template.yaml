@@ -537,11 +537,12 @@ rules:
   - GEOSITE,category-social-media-!cn,📱国际社交软件 # 国外社交软件
 
   #### 代理规则块，按照使用频率/规则集大小排序
-  # 其他
+  # 影音
+  - GEOSITE,imdb,✅默认代理
+  - GEOSITE,tmdb,✅默认代理 # TMDB服务，影视刮削，直连访问缓慢经常失败
   # 游戏相关
   - GEOSITE,synology,🌐默认直连 # 群晖服务，包括QC
   - GEOSITE,category-game-platforms-download,🌐默认直连 # 各类游戏平台下载域名，包括steam下载
-  - GEOSITE,tmdb,✅默认代理 # TMDB服务，影视刮削，直连访问缓慢经常失败
   # 微软相关
   - GEOSITE,win-extra,Ⓜ️微软服务 # outlook域名
   - GEOSITE,win-update,Ⓜ️微软服务 # 微软更新域名
