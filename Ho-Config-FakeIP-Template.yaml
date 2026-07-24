@@ -128,6 +128,7 @@ dns:
     - "geosite:bilibili"
     - "geosite:bilibili-cdn"
     - "geosite:bytedance"
+    - "geosite:cn"
     - "geosite:category-cdn-cn"
     - "geosite:geolocation-cn" # 地理位置在中国的域名，不包括谷歌在中国的域名避免谷歌商店下载问题，关于谷歌商店下载，详见♻️延迟最低文件内容
     # - "geosite:geolocation-!cn@cn" # 地理位置不在中国的域名中具有国内CDN的部分，包括Steam在的国内CDN
@@ -148,29 +149,29 @@ dns:
 
   # # 国内 / 直连 / 局域网 / 自定义域名走 AliDNS 或 public-dns
 
-  nameserver-policy:
-    "geosite:private": *public-dns
-    "geosite:cn": *alidns-dns
-    "geosite:geolocation-cn": *alidns-dns
-    "geosite:geolocation-!cn@cn": *alidns-dns
-    "geosite:apple": *alidns-dns
-    "geosite:alibaba": *alidns-dns
-    "geosite:tencent": *alidns-dns
-    "geosite:tencent-games": *alidns-dns
-    "geosite:bilibili": *alidns-dns
-    "geosite:bilibili-cdn": *alidns-dns
-    "geosite:bytedance": *alidns-dns
-    "geosite:category-cdn-cn": *alidns-dns
-    "geosite:onedrive": *alidns-dns
-    "geosite:category-cas": *alidns-dns
-    "geosite:win-update": *alidns-dns
-    "geosite:category-game-platforms-download": *alidns-dns
-    "geosite:category-public-tracker": *alidns-dns
-    "rule-set:custom_direct": *alidns-dns
-    "rule-set:custom_ddns": *alidns-dns
-    "+.local": *public-dns
-    "+.lan": *public-dns
-    "+.home.arpa": *public-dns
+  # nameserver-policy:
+  #   "geosite:private": *public-dns
+  #   "geosite:cn": *alidns-dns
+  #   "geosite:geolocation-cn": *alidns-dns
+  #   "geosite:geolocation-!cn@cn": *alidns-dns
+  #   "geosite:apple": *alidns-dns
+  #   "geosite:alibaba": *alidns-dns
+  #   "geosite:tencent": *alidns-dns
+  #   "geosite:tencent-games": *alidns-dns
+  #   "geosite:bilibili": *alidns-dns
+  #   "geosite:bilibili-cdn": *alidns-dns
+  #   "geosite:bytedance": *alidns-dns
+  #   "geosite:category-cdn-cn": *alidns-dns
+  #   "geosite:onedrive": *alidns-dns
+  #   "geosite:category-cas": *alidns-dns
+  #   "geosite:win-update": *alidns-dns
+  #   "geosite:category-game-platforms-download": *alidns-dns
+  #   "geosite:category-public-tracker": *alidns-dns
+  #   "rule-set:custom_direct": *alidns-dns
+  #   "rule-set:custom_ddns": *alidns-dns
+  #   "+.local": *public-dns
+  #   "+.lan": *public-dns
+  #   "+.home.arpa": *public-dns
 
 
 
