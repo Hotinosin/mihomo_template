@@ -129,7 +129,7 @@ dns:
     - "geosite:bilibili-cdn"
     - "geosite:bytedance"
     - "geosite:category-cdn-cn"
-    # - "geosite:geolocation-cn" # 地理位置在中国的域名，不包括谷歌在中国的域名避免谷歌商店下载问题，关于谷歌商店下载，详见♻️延迟最低文件内容
+    - "geosite:geolocation-cn" # 地理位置在中国的域名，不包括谷歌在中国的域名避免谷歌商店下载问题，关于谷歌商店下载，详见♻️延迟最低文件内容
     # - "geosite:geolocation-!cn@cn" # 地理位置不在中国的域名中具有国内CDN的部分，包括Steam在的国内CDN
     - "address:/+.local/" # 局域网 mDNS 地址
     - "address:/+.home.arpa/"
