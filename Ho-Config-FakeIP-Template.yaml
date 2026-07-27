@@ -89,8 +89,8 @@ alidns-dns: &alidns-dns
   # - 119.29.29.29
 
 secure-dns: &secure-dns # 加密的DNS，必须避免被解析为0.0.0.0等污染，为域名时必须搭配default-nameserver使用
-  - https://dns.google/dns-query
-  - https://cloudflare-dns.com/dns-query
+  - https://dns.google/dns-query#✅默认代理
+  - https://cloudflare-dns.com/dns-query#✅默认代理
   # - https://8.8.4.4/dns-query
   # - https://1.1.1.1/dns-query
 
@@ -138,8 +138,8 @@ dns:
 
   # redir-host配置段
   default-nameserver: *public-dns # 解析DNS服务器域名的DNS，可以加密但必须为IP，如果不用DNS服务器的域名则无需配置
-  proxy-server-nameserver: *public-dns # 临时使用国内 UDP，排查境外 DoH 连通性
-  nameserver: *public-dns # 临时使用国内 UDP，排查境外 DoH 连通性
+  proxy-server-nameserver: *public-dns # 代理节点域名使用国内 UDP 启动解析
+  nameserver: *secure-dns # 未命中国内策略的域名经默认代理访问 DoH
   # fallback: # 过时的配置，已被 nameserver-policy 取代，使用时会产生DNS泄露
 
 
