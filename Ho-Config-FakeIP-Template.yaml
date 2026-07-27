@@ -138,8 +138,8 @@ dns:
 
   # redir-host配置段
   default-nameserver: *public-dns # 解析DNS服务器域名的DNS，可以加密但必须为IP，如果不用DNS服务器的域名则无需配置
-  proxy-server-nameserver: *secure-dns # 代理节点域名使用加密 DNS 解析
-  nameserver: *secure-dns # 兜底默认 DNS，未命中 nameserver-policy 时启用
+  proxy-server-nameserver: *public-dns # 临时使用国内 UDP，排查境外 DoH 连通性
+  nameserver: *public-dns # 临时使用国内 UDP，排查境外 DoH 连通性
   # fallback: # 过时的配置，已被 nameserver-policy 取代，使用时会产生DNS泄露
 
 
