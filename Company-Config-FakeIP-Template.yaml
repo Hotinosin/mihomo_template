@@ -78,10 +78,6 @@ dnspod-dns: &dnspod-dns # 默认直连加密 DNS：DoT/DoH 并发查询
   - tls://1.12.12.12:853
   - https://doh.pub/dns-query
 
-secure-dns: &secure-dns # 敏感/代理域名使用 Cloudflare/Google DoH
-  - https://cloudflare-dns.com/dns-query#✅默认代理
-  - https://dns.google/dns-query#✅默认代理
-
 dns:
   enable: true # 启用 dns 模块，否则采用系统 DNS
   listen: "[::]:1053" # DNS 监听端口
@@ -140,30 +136,30 @@ dns:
 
   nameserver-policy:
     ## Crypto / 交易所 ---------------------------------------------------------------
-    # ✅新增：这些域名虽然默认会返回 fake-ip，但指定可信 DNS 可以降低边界场景污染风险，并兼容后续 redir-host 测试
-    "geosite:category-cryptocurrency": *secure-dns
-    "rule-set:company_custom_crypto": *secure-dns
+    # 这些域名统一使用 DNSPod DoT/DoH
+    "geosite:category-cryptocurrency": *dnspod-dns
+    "rule-set:company_custom_crypto": *dnspod-dns
 
     ## AI ---------------------------------------------------------------------------
-    # ✅新增：AI 服务走可信 DoH
-    "geosite:openai": *secure-dns
-    "geosite:google-gemini": *secure-dns
-    "geosite:anthropic": *secure-dns
-    "geosite:cursor": *secure-dns
-    "geosite:category-ai-!cn": *secure-dns
+    # AI 服务走 DNSPod DoT/DoH
+    "geosite:openai": *dnspod-dns
+    "geosite:google-gemini": *dnspod-dns
+    "geosite:anthropic": *dnspod-dns
+    "geosite:cursor": *dnspod-dns
+    "geosite:category-ai-!cn": *dnspod-dns
 
     ## 常见被污染 / 代理域名 ---------------------------------------------------------
-    # ✅新增：常见代理域名走可信 DoH
-    "geosite:gfw": *secure-dns
-    "geosite:google": *secure-dns
-    "geosite:github": *secure-dns
-    "geosite:youtube": *secure-dns
-    "geosite:telegram": *secure-dns
-    "geosite:x": *secure-dns
-    "geosite:tiktok": *secure-dns
-    "geosite:category-social-media-!cn": *secure-dns
-    "rule-set:company_custom_rules": *secure-dns
-    "rule-set:custom_rules": *secure-dns
+    # 常见代理域名走 DNSPod DoT/DoH
+    "geosite:gfw": *dnspod-dns
+    "geosite:google": *dnspod-dns
+    "geosite:github": *dnspod-dns
+    "geosite:youtube": *dnspod-dns
+    "geosite:telegram": *dnspod-dns
+    "geosite:x": *dnspod-dns
+    "geosite:tiktok": *dnspod-dns
+    "geosite:category-social-media-!cn": *dnspod-dns
+    "rule-set:company_custom_rules": *dnspod-dns
+    "rule-set:custom_rules": *dnspod-dns
 
     ## 国内 / 直连 / 局域网 ----------------------------------------------------------
     # ✅新增：国内与直连域名显式走国内 DNS
