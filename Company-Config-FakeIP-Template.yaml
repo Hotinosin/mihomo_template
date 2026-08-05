@@ -75,7 +75,7 @@ public-dns: &public-dns # 仅用于加密 DNS 域名与代理节点的启动解�
   - 1.12.12.12
 
 dnspod-dns: &dnspod-dns # 默认直连加密 DNS：DoT/DoH 并发查询
-  - tls://1.12.12.12:853
+  - tls://dot.pub:853
   - https://doh.pub/dns-query
 
 dns:

@@ -79,9 +79,8 @@ public-dns: &public-dns # 仅用于加密 DNS 域名与代理节点的启动解�
   - 119.29.29.29
   - 1.12.12.12
 
-dnspod-dns: &dnspod-dns # 默认直连加密 DNS：DoT/DoH 并发查询
-  - tls://1.12.12.12:853
-  - https://doh.pub/dns-query
+alidns-dns: &alidns-dns # 默认直连加密 DNS：强制使用阿里 DoH over HTTP/3
+  - "https://dns.alidns.com/dns-query#h3=true"
 
 proxy-dns: &proxy-dns # 代理域名使用 Cloudflare/Google DoH，并发查询、互为备用
   - https://cloudflare-dns.com/dns-query#✅默认代理
@@ -131,12 +130,12 @@ dns:
 
   # redir-host配置段
   default-nameserver: *public-dns # 解析DNS服务器域名的DNS，可以加密但必须为IP，如果不用DNS服务器的域名则无需配置
-  proxy-server-nameserver: *dnspod-dns # 代理节点域名使用 DNSPod 加密 DNS
-  nameserver: *dnspod-dns # 默认使用 DNSPod DoT/DoH
+  proxy-server-nameserver: *alidns-dns # 代理节点域名使用阿里 DoH3
+  nameserver: *alidns-dns # 默认使用阿里 DoH over HTTP/3
   # fallback: # 过时的配置，已被 nameserver-policy 取代，使用时会产生DNS泄露
 
 
-  # 测试阶段：暂时关闭 nameserver-policy，所有域名统一使用 DNSPod DoT/DoH
+  # 测试阶段：暂时关闭 nameserver-policy，所有域名统一使用阿里 DoH3
   # nameserver-policy:
   #   "geosite:openai,google-gemini,cursor,anthropic,category-ai-!cn,category-cryptocurrency,yahoo,github,youtube,google,telegram,x,whatsapp,tiktok,category-social-media-!cn,imdb,tmdb,category-dev@!cn,homebrew,category-container,gfw": *proxy-dns
 
