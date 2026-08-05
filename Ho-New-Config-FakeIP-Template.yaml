@@ -83,8 +83,8 @@ alidns-dns: &alidns-dns # 默认直连加密 DNS：强制使用阿里 DoH over H
   - "https://dns.alidns.com/dns-query#h3=true"
 
 proxy-dns: &proxy-dns # 代理域名使用 Cloudflare/Google DoH，并发查询、互为备用
-  - https://cloudflare-dns.com/dns-query#✅默认代理
-  - https://dns.google/dns-query#✅默认代理
+  - https://cloudflare-dns.com/dns-query#✅默认代理&h3=true
+  - https://dns.google/dns-query#✅默认代理&h3=true
 
 dns:
   enable: true # 启用dns模块，否则采用系统DNS
