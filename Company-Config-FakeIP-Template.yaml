@@ -68,18 +68,19 @@ geox-url: # GEO数据库下载地址，内核会按需下载，未被使用的�
 # 但如果第一次拿到了0.0.0.0,127.0.0.1这样的错误IP，请求无法发给mihomo就会无法访问
 # 综上所述，配置DNS没有那么重要，只要保证首次解析不要得到0.0.0.0这样的错误IP即可
 
-public-dns: &public-dns # ✅国内/直连/代理节点解析使用国内 DNS
+public-dns: &public-dns # 仅用于加密 DNS 域名与代理节点的启动解析
   # - dhcp://wan
   # - dhcp://eth3
   - 119.29.29.29
   - 1.12.12.12
 
-secure-dns: &secure-dns # ✅策略版：敏感/代理域名使用可信 DoH，并通过默认代理组查询
-  # - https://doh.pub/dns-query
-  - https://dns.google/dns-query
-  - https://cloudflare-dns.com/dns-query
-  # - https://8.8.4.4/dns-query
-  # - https://1.1.1.1/dns-query
+dnspod-dns: &dnspod-dns # 默认直连加密 DNS：DoT/DoH 并发查询
+  - tls://1.12.12.12:853
+  - https://doh.pub/dns-query
+
+secure-dns: &secure-dns # 敏感/代理域名使用 Cloudflare/Google DoH
+  - https://cloudflare-dns.com/dns-query#✅默认代理
+  - https://dns.google/dns-query#✅默认代理
 
 dns:
   enable: true # 启用 dns 模块，否则采用系统 DNS
@@ -133,8 +134,8 @@ dns:
 
   # DNS 解析策略段
   default-nameserver: *public-dns # ✅用于解析 DoH 服务器域名，保持国内 DNS
-  proxy-server-nameserver: *public-dns # ✅代理节点域名解析固定国内 DNS，避免鸡蛋问题
-  direct-nameserver: *public-dns # ✅DIRECT 出口域名解析使用国内 DNS，保证国内 CDN/直连体验
+  proxy-server-nameserver: *dnspod-dns # 代理节点域名使用 DNSPod 加密 DNS
+  direct-nameserver: *dnspod-dns # DIRECT 出口域名使用 DNSPod 加密 DNS
   direct-nameserver-follow-policy: false
 
   nameserver-policy:
@@ -184,7 +185,7 @@ dns:
     "rule-set:custom_ddns": *public-dns
     "rule-set:company_custom_direct": *public-dns
 
-  nameserver: *public-dns # ✅默认兜底仍走国内 DNS；需要代理的敏感域名由 nameserver-policy 接管
+  nameserver: *dnspod-dns # 默认使用 DNSPod DoT/DoH；特定域名仍由 nameserver-policy 接管
   # fallback: # 不使用 fallback，避免 DNS 泄露和复杂回退逻辑
 
 ## hosts设置---------------------------------------------------------------------------------------------------
