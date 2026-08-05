@@ -76,21 +76,12 @@ geox-url: # GEO数据库下载地址，内核会按需下载，未被使用的�
 public-dns: &public-dns # 快速的DNS，不关心是否存在污染和劫持，只要快就好了
   # - dhcp://wan # 指定网卡DHCP获取的DNS，硬路由的wan口网卡名一般为wan
   # - dhcp://eth3 # 软路由的wan口一般为最后一张网卡，eth0,eth1 双网口就是eth1
-  - 223.5.5.5
   - 119.29.29.29
-  # - 114.114.114.114
-
-
-alidns-dns: &alidns-dns
-  # - quic://dns.alidns.com:853
-  # - https://dns.alidns.com/dns-query
-  - 223.5.5.5
-  - 223.6.6.6
-  # - 119.29.29.29
+  - 1.12.12.12
 
 secure-dns: &secure-dns # 加密的DNS，必须避免被解析为0.0.0.0等污染，为域名时必须搭配default-nameserver使用
-  - https://dns.google/dns-query#✅默认代理
   - https://cloudflare-dns.com/dns-query#✅默认代理
+  - https://dns.google/dns-query#✅默认代理
   # - https://8.8.4.4/dns-query
   # - https://1.1.1.1/dns-query
 
@@ -98,7 +89,7 @@ dns:
   enable: true # 启用dns模块，否则采用系统DNS
   listen: "[::]:1053" # DNS监听端口，仅支持udp
   enhanced-mode: fake-ip # DNS处理模式：redir-host/fake-ip，fake-ip更快但可能引入问题（缓存fakeip后无法故障切换）
-  cache-algorithm: lru # DNS缓存算法，lru（默认）性能开销低，被访问到就提前，超出容量则踢出队尾，适合固定访问有限网站；arc策略则是职能匹配，偶然查询的陌生网站不会踢掉经常访问的网站，但是性能开销更大，适合性能宽裕设备
+  cache-algorithm: arc # 自适应缓存，避免偶发查询挤出高频域名
   prefer-h3: false # DoH若支持则优先使用HTTP/3
   ipv6: true # 是否解析ipv6地址，否则返回空结果
   use-hosts: true # 查询配置文件中的 hosts
@@ -139,31 +130,31 @@ dns:
   # redir-host配置段
   default-nameserver: *public-dns # 解析DNS服务器域名的DNS，可以加密但必须为IP，如果不用DNS服务器的域名则无需配置
   proxy-server-nameserver: *public-dns # 代理节点域名使用国内 UDP 启动解析
-  nameserver: *secure-dns # 未命中国内策略的域名经默认代理访问 DoH
+  nameserver: *public-dns # 默认使用 DNSPod UDP
   # fallback: # 过时的配置，已被 nameserver-policy 取代，使用时会产生DNS泄露
 
 
-  # 国内 / 直连 / 局域网 / 自定义域名走 AliDNS 或 public-dns
+  # 国内 / 直连 / 局域网 / 自定义域名走 public-dns
   nameserver-policy:
     "geosite:private": *public-dns
-    "geosite:cn": *alidns-dns
-    "geosite:geolocation-cn": *alidns-dns
-    "geosite:geolocation-!cn@cn": *alidns-dns
-    "geosite:apple": *alidns-dns
-    "geosite:alibaba": *alidns-dns
-    "geosite:tencent": *alidns-dns
-    "geosite:tencent-games": *alidns-dns
-    "geosite:bilibili": *alidns-dns
-    "geosite:bilibili-cdn": *alidns-dns
-    "geosite:bytedance": *alidns-dns
-    "geosite:category-cdn-cn": *alidns-dns
-    "geosite:onedrive": *alidns-dns
-    "geosite:category-cas": *alidns-dns
-    "geosite:win-update": *alidns-dns
-    "geosite:category-game-platforms-download": *alidns-dns
-    "geosite:category-public-tracker": *alidns-dns
-    "rule-set:custom_direct": *alidns-dns
-    "rule-set:custom_ddns": *alidns-dns
+    "geosite:cn": *public-dns
+    "geosite:geolocation-cn": *public-dns
+    "geosite:geolocation-!cn@cn": *public-dns
+    "geosite:apple": *public-dns
+    "geosite:alibaba": *public-dns
+    "geosite:tencent": *public-dns
+    "geosite:tencent-games": *public-dns
+    "geosite:bilibili": *public-dns
+    "geosite:bilibili-cdn": *public-dns
+    "geosite:bytedance": *public-dns
+    "geosite:category-cdn-cn": *public-dns
+    "geosite:onedrive": *public-dns
+    "geosite:category-cas": *public-dns
+    "geosite:win-update": *public-dns
+    "geosite:category-game-platforms-download": *public-dns
+    "geosite:category-public-tracker": *public-dns
+    "rule-set:custom_direct": *public-dns
+    "rule-set:custom_ddns": *public-dns
     "+.local": *public-dns
     "+.lan": *public-dns
     "+.home.arpa": *public-dns
