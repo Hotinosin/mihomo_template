@@ -72,8 +72,7 @@ public-dns: &public-dns # ✅国内/直连/代理节点解析使用国内 DNS
   # - dhcp://wan
   # - dhcp://eth3
   - 119.29.29.29
-  - 223.5.5.5
-  # - 114.114.114.114
+  - 1.12.12.12
 
 secure-dns: &secure-dns # ✅策略版：敏感/代理域名使用可信 DoH，并通过默认代理组查询
   # - https://doh.pub/dns-query
@@ -116,6 +115,7 @@ dns:
     - "geosite:bilibili-cdn" # ✅新增：与规则里的 bilibili-cdn 保持一致
     - "geosite:bytedance"
     - "geosite:category-cdn-cn"
+    - "geosite:category-container" # Docker/容器域名返回真实 IP，流量仍由规则代理
 
     # ⚠️可选：如果你要更接近“国内 real-ip，国外 fake-ip”，再取消下面两行注释
     # - "geosite:geolocation-cn"

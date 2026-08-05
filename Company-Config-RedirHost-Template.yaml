@@ -72,8 +72,7 @@ public-dns: &public-dns # ✅国内/直连/代理节点解析使用国内 DNS
   # - dhcp://wan
   # - dhcp://eth3
   - 119.29.29.29
-  - 223.5.5.5
-  # - 114.114.114.114
+  - 1.12.12.12
 
 secure-dns: &secure-dns # ✅策略版：敏感/代理域名使用可信 DoH，并通过默认代理组查询
   # - https://doh.pub/dns-query
