@@ -1,0 +1,127 @@
+## 模板名称: Ho-Config-FakeIP-DirectDoH-Template.yaml
+## 模板版本: 2026.08.04
+## 基准来源: Ho-Config
+## 修订日期: 2026-08-04
+
+## 入站端口配置 ---------------------------------------------------------------------------------------------------
+mixed-port: 7890 # HTTP+Socks4混合，Win下的系统代理端口
+socks-port: 1080 # Socks5，代理端口
+port: 8080 # HTTP，代理端口
+redir-port: 7891 # 非linux无效，redir 透明代理端口
+tproxy-port: 7892 # 非linux无效，tproxy 透明代理端口
+
+## 全局配置 ------------------------------------------------------------------------------------------------
+mode: direct # 仅提供直连 DoH DNS，不使用流量分流
+allow-lan: true # 允许局域网连接
+bind-address: "*" # 监听的本地网卡IP地址，*为全部IP地址
+log-level: warning # 内核日志级别
+ipv6: false # 关闭 IPv6 流量
+tcp-concurrent: true # TCP并发
+#interface-name: en0  # clash流量出站接口，即接口绑定
+find-process-mode: off # 进程匹配模式（off:关闭，alwas:开启，strict自动），tun模式下无效
+lan-allowed-ips: # 允许连接的客户端IP，默认允许全部
+  - 0.0.0.0/0
+lan-disallowed-ips: # 禁止连接的IP，优先级高于allow白名单
+  - ~
+authentication: # http(s)/socks/mixed 的用户验证，格式："user1:pass1"，不写则禁止全部用户
+  - ~
+skip-auth-prefixes: # 白名单，允许跳过用户验证的IP
+  - ~
+unified-delay: true # 统一延迟计算，没啥卵用，就是界面好看，会对延迟自动选择策略造成影响
+#routing-mark: 6666  # 非linux无效，路由标记，为流量提供标记以供其他应用进行流量处理
+
+## TCP-KeepA-live配置 ------------------------------------------------------------------------------------------
+keep-alive-idle: 120 # 触发心跳包的链路无活动阈值，无活动后发送心跳包检测对端是否存活
+keep-alive-interval: 15 # 发送心跳包的间隔，无回应则最多重发9次后判断链路关闭
+disable-keep-alive: false # 禁用 keep alive，即允许长链接一直存在，安卓端会强制设定为true
+
+## API面板设置---------------------------------------------------------------------------------------------------
+external-controller: "0.0.0.0:9090" # API面板仅监听 IPv4
+secret: "" #🔴API面板访问密钥
+external-ui: ui # API面板静态资源路径
+external-ui-name: zashboard # API面板名，配合路径拼接成路径，例如/ui/metacubexd
+external-ui-url: "https://ghfast.top/https://github.com/Zephyruso/zashboard/releases/latest/download/dist.zip" # API面板下载地址
+
+## 缓存设置
+profile:
+  store-selected: true # 缓存 API面板 对策略组的选择
+  store-fake-ip: true # 缓存 fake-ip 映射，重启后保持域名映射一致
+
+## 外部资源下载设置---------------------------------------------------------------------------------------------------
+# global-client-fingerprint: random # 全局客户端指纹，优先级低于其他处的声明
+global-ua: clash.meta # 全局UA，默认为clash.meta
+etag-support: true # 资源下载的 ETag 支持，使重复资源不会重复下载
+geodata-mode: false # GEOIP数据模式，false:mmdb，true:dat，mmdb更新但有设备不支持
+geodata-loader: standard # GEO文件加载模式，默认memconservative（小内存设备模式，即分段加载geo数据而不是全部加载）
+geo-auto-update: true # GEO文件自动更新
+geo-update-interval: 168 # 更新间隔，小时
+geox-url: # GEO数据库下载地址，内核会按需下载，未被使用的数据库不会被下载，采用star最多的v2ray项目，修bug很快
+  geoip: "https://ghfast.top/https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/geoip.dat"
+  geosite: "https://ghfast.top/https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/geosite.dat"
+  mmdb: "https://ghfast.top/https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/country.mmdb"
+  asn: "https://ghfast.top/https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/GeoLite2-ASN.mmdb"
+
+## fakeip下的DNS设置---------------------------------------------------------------------------------------------------
+# 客户端发起网址A的DNS，到达mihomo的DNS模块，mihomo会使用下方的配置进行DNS
+# 当fakeip为黑名单模式时，未匹配到filter的域名将直接返回fakeip给客户端
+# 匹配到fakeip的域名将会使用redir-host模式进行常规解析，得到IP后返回给客户端
+# 客户端拿到IP后，再次对IP发起连接请求，此时请求会进入mihomo的规则匹配，根据匹配结果直连或者远端解析
+# 也就是说DNS解析实际上会发生两次，第一次的结果并不重要，第二次只要规则正确触发远程解析，绝不会污染和劫持
+# 但如果第一次拿到了0.0.0.0,127.0.0.1这样的无效IP，请求无法发给mihomo就会无法访问
+# 综上所述，配置DNS没有那么重要，只要保证首次解析不要得到0.0.0.0这样的错误IP即可
+# 但是如果一定要要求访问国外域名DNS无泄漏，或者需要对国外进行分流，那么建议使用fakeip模式
+# 因为fakeip模式下，国外域名全部是fakeip并未进行本地解析，而且国外域名内网全部使用fakeip段，方便分流
+
+public-dns: &public-dns # 快速的DNS，不关心是否存在污染和劫持，只要快就好了
+  # - dhcp://wan # 指定网卡DHCP获取的DNS，硬路由的wan口网卡名一般为wan
+  # - dhcp://eth3 # 软路由的wan口一般为最后一张网卡，eth0,eth1 双网口就是eth1
+  - 223.5.5.5
+  - 119.29.29.29
+  # - 114.114.114.114
+
+
+direct-doh: &direct-doh # 直连 DoH；default-nameserver 负责解析其域名
+  - https://doh.pub/dns-query
+  - https://dns.alidns.com/dns-query
+
+dns:
+  enable: true # 启用dns模块，否则采用系统DNS
+  listen: "0.0.0.0:1053" # DNS仅监听 IPv4
+  enhanced-mode: fake-ip # DNS处理模式：redir-host/fake-ip，fake-ip更快但可能引入问题（缓存fakeip后无法故障切换）
+  cache-algorithm: lru # DNS缓存算法，lru（默认）性能开销低，被访问到就提前，超出容量则踢出队尾，适合固定访问有限网站；arc策略则是职能匹配，偶然查询的陌生网站不会踢掉经常访问的网站，但是性能开销更大，适合性能宽裕设备
+  prefer-h3: false # DoH若支持则优先使用HTTP/3
+  ipv6: false # AAAA 查询返回空结果
+  use-hosts: true # 查询配置文件中的 hosts
+  use-system-hosts: true # 查询系统的 hosts
+  respect-rules: false # DNS请求遵循路由规则，需先配置好 proxy-server-nameserver，否则出现鸡蛋问题，强烈不建议和perfer-h3一起使用
+
+  # fakeip配置段
+  fake-ip-range: 198.18.0.1/16 # fakeip 的 IP 段，tun接口的默认 IPV4 地址 也使用此值作为参考
+  # redir-host配置段
+  default-nameserver: *public-dns # 解析DNS服务器域名的DNS，可以加密但必须为IP，如果不用DNS服务器的域名则无需配置
+  proxy-server-nameserver: *direct-doh # 代理节点域名直连使用 DoH
+  nameserver: *direct-doh # 所有常规 DNS 查询直连使用 DoH
+
+
+
+
+## hosts设置---------------------------------------------------------------------------------------------------
+hosts: # 自定义hosts映射，可以在此处手动指定一些Fakeip地址以强制分流
+  "mihomo.mihomo": 127.0.0.1
+  "mongo.lan": 192.168.100.42
+  "vcenter.lan": 192.168.100.4
+  "esxi-synolgy.xbx.ops": 192.168.100.102
+  "synolgy.xbx.ops": 192.168.100.112
+  "truenas.xbx.ops": 192.168.100.30
+  "guoxin-bmc.xbx.ops": 192.168.100.11
+  "vm-op1.xbx.ops": 192.168.3.1
+  "vm-op2.xbx.ops": 192.168.4.1
+  "vm-op3.xbx.ops": 192.168.5.1
+  "vm-op6.xbx.ops": 192.168.6.1
+  "vm-op99.xbx.ops": 192.168.99.1
+  "ikuai.xbx.ops": 192.168.100.1
+  "esxi-5.xbx.ops": 192.168.100.5
+  "esxi-6.xbx.ops": 192.168.100.6
+  "esxi-7.xbx.ops": 192.168.100.7
+  "esxi-8.xbx.ops": 192.168.100.8
+  "airflow.qtcls.cn": 192.168.2.5
