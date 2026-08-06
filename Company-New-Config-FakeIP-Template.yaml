@@ -485,14 +485,12 @@ rules:
   - GEOSITE,private,DIRECT # 私有地址直连
   - GEOIP,private,DIRECT,no-resolve # 私有地址直连
 
-  # QUIC：已知外网代理、已知国内直连；其余 UDP/443 一律拒绝，避免未知 QUIC 直连
-  - AND,((NETWORK,UDP),(DST-PORT,443),(GEOSITE,gfw)),✅默认代理
-  - AND,((NETWORK,UDP),(DST-PORT,443),(GEOSITE,geolocation-!cn)),✅默认代理
-  - AND,((NETWORK,UDP),(DST-PORT,443),(GEOIP,!cn)),✅默认代理
+  # QUIC：已知国内优先直连；其余走代理，避免未知 QUIC 回落为 DIRECT
   - AND,((NETWORK,UDP),(DST-PORT,443),(GEOSITE,geolocation-cn)),🌐默认直连
   - AND,((NETWORK,UDP),(DST-PORT,443),(GEOSITE,cn)),🌐默认直连
   - AND,((NETWORK,UDP),(DST-PORT,443),(GEOIP,cn)),🌐默认直连
-  - AND,((NETWORK,UDP),(DST-PORT,443)),REJECT
+  - AND,((NETWORK,UDP),(DST-PORT,443),(NOT,((GEOSITE,geolocation-cn)))),✅默认代理
+  - AND,((NETWORK,UDP),(DST-PORT,443),(NOT,((GEOIP,cn)))),✅默认代理
 
   - GEOSITE,CATEGORY-SPEEDTEST,✈️Speedtest
   - GEOSITE,CATEGORY-IP-GEO-DETECT,🅿️IP-Check
