@@ -485,10 +485,7 @@ rules:
   - GEOSITE,private,DIRECT # 私有地址直连
   - GEOIP,private,DIRECT,no-resolve # 私有地址直连
 
-  # QUIC：已知国内优先直连；其余走代理，避免未知 QUIC 回落为 DIRECT
-  - AND,((NETWORK,UDP),(DST-PORT,443),(GEOSITE,geolocation-cn)),🌐默认直连
-  - AND,((NETWORK,UDP),(DST-PORT,443),(GEOSITE,cn)),🌐默认直连
-  - AND,((NETWORK,UDP),(DST-PORT,443),(GEOIP,cn)),🌐默认直连
+  # QUIC：非中国域名/IP 走代理，避免未知 QUIC 回落为 DIRECT
   - AND,((NETWORK,UDP),(DST-PORT,443),(NOT,((GEOSITE,geolocation-cn)))),✅默认代理
   - AND,((NETWORK,UDP),(DST-PORT,443),(NOT,((GEOIP,cn)))),✅默认代理
 
