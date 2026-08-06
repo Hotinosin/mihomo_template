@@ -138,6 +138,9 @@ dns:
 
   # 代理域名使用 Cloudflare/Google DoH3，其余域名使用阿里 DoH3 与 DNSPod DoH
   nameserver-policy:
+    # 先用国内 DoH 解析代理 DNS 端点，避免递归自举循环
+    "dns.google": *doh-dns
+    "cloudflare-dns.com": *doh-dns
     "geosite:openai,google-gemini,cursor,anthropic,category-ai-!cn,category-cryptocurrency,yahoo,github,youtube,google,telegram,x,whatsapp,tiktok,category-social-media-!cn,imdb,tmdb,category-dev@!cn,homebrew,category-container,gfw": *proxy-dns
 
 
