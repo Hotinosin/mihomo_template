@@ -1,7 +1,7 @@
-## 模板名称: Company-New-Config-FakeIP-Template.yaml
-## 模板版本: 2026.08.06
-## 基准来源: Company-Config-FakeIP-Template.yaml + Ho-New DNS/QUIC 改动
-## 修订日期: 2026-08-06
+## 模板名称: Company-New-Config-RedirHost-Template.yaml
+## 模板版本: 2026.08.19
+## 基准来源: Company-New-Config-FakeIP-Template.yaml
+## 修订日期: 2026-08-19
 
 ## 入站端口配置 ---------------------------------------------------------------------------------------------------
 mixed-port: 7890 # HTTP+Socks4混合，Win下的系统代理端口
@@ -46,7 +46,7 @@ external-ui-url: "https://ghfast.top/https://github.com/Zephyruso/zashboard/rele
 ## 缓存设置
 profile:
   store-selected: true # 缓存 API面板 对策略组的选择
-  store-fake-ip: true # 缓存 Fake-IP 映射，重启后保持域名映射一致
+  store-fake-ip: false # Redir-Host 模式无需缓存 Fake-IP 映射
 
 ## 外部资源下载设置---------------------------------------------------------------------------------------------------
 # global-client-fingerprint: random # 已废弃，改为在 proxy-providers 中设置
@@ -86,57 +86,13 @@ proxy-dns: &proxy-dns # 备用：代理域名使用 Cloudflare/Google DoH3
 dns:
   enable: true # 启用 dns 模块，否则采用系统 DNS
   listen: "[::]:1053" # DNS 监听端口
-  enhanced-mode: fake-ip # ✅保留 Fake-IP 模式
+  enhanced-mode: redir-host # Redir-Host 模式，向客户端返回真实解析 IP
   cache-algorithm: arc
   prefer-h3: false
   ipv6: false # ✅修改：与全局 ipv6:false 保持一致，避免解析 AAAA 但实际 IPv6 不通
   use-hosts: true
   use-system-hosts: true
   respect-rules: false # ✅保留：不用全局 respect-rules，改用 nameserver-policy 精确控制
-
-  # fake-ip 配置段
-  fake-ip-range: 198.99.0.1/16
-  fake-ip-filter-mode: blacklist # ✅黑名单：命中 filter 返回真实 IP；未命中默认返回 fake-ip
-  fake-ip-filter:
-    # ✅自定义直连 / DDNS：返回真实 IP
-    - "rule-set:custom_ddns"
-    - "rule-set:custom_direct"
-    - "rule-set:company_custom_direct"
-
-    # ✅内网 / 本地 / 时间同步：返回真实 IP
-    - "geosite:private"
-
-    # ✅确定直连且不怕 DNS 污染的国内/系统服务：返回真实 IP
-    - "geosite:apple"
-    - "geosite:category-cas"
-    - "geosite:category-public-tracker"
-    - "geosite:win-update"
-    - "geosite:category-game-platforms-download"
-    - "geosite:alibaba"
-    - "geosite:tencent-games"
-    - "geosite:tencent"
-    - "geosite:onedrive"
-    - "geosite:bilibili"
-    - "geosite:bilibili-cdn" # ✅新增：与规则里的 bilibili-cdn 保持一致
-    - "geosite:bytedance"
-    - "geosite:cn"
-    - "geosite:category-cdn-cn"
-    - "geosite:geolocation-cn"
-    - "geosite:category-container" # Docker/容器域名返回真实 IP，流量仍由规则代理
-
-    # ⚠️可选：如果你要更接近“国内 real-ip，国外 fake-ip”，再取消下面两行注释
-    # - "geosite:geolocation-cn"
-    # - "geosite:cn"
-
-    # ✅本地域名：返回真实 IP
-    - "address:/+.local/"
-    - "address:/+.home.arpa/"
-    - "address:/+.lan/"
-    - "*.local"
-    - "*.lan" # ✅新增：补齐常见局域网后缀
-
-    # ❌不要把 okx / binance / google / github / openai / telegram 放进这里
-    # 它们应默认返回 fake-ip，以避免真实 DNS 结果被污染
 
   # redir-host配置段
   default-nameserver: *public-dns # 用于解析 DoH 服务器域名，保持国内 DNS

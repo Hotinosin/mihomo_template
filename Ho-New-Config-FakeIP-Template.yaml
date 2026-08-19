@@ -500,12 +500,19 @@ rules:
   - GEOSITE,microsoft,Ⓜ️微软服务 # 微软服务，放于GFW后是因为github等在GFW中需要代理
   - GEOSITE,steam,🎮Steam # Steam，默认直连，换区时修改此处，放于GFW之后是因创意工坊需始终代理
 
-  # QUIC：已知国内直连；非中国域名/IP 走代理，避免回落为 DIRECT
-  - AND,((NETWORK,UDP),(DST-PORT,443),(GEOSITE,geolocation-cn)),🌐默认直连
-  - AND,((NETWORK,UDP),(DST-PORT,443),(GEOSITE,cn)),🌐默认直连
-  - AND,((NETWORK,UDP),(DST-PORT,443),(GEOIP,cn)),🌐默认直连
-  - AND,((NETWORK,UDP),(DST-PORT,443),(NOT,((GEOSITE,geolocation-cn)))),✅默认代理
-  - AND,((NETWORK,UDP),(DST-PORT,443),(NOT,((GEOIP,cn)))),✅默认代理
+  # 当前 QUIC 分流配置（暂时停用）
+  # - AND,((NETWORK,UDP),(DST-PORT,443),(GEOSITE,geolocation-cn)),🌐默认直连
+  # - AND,((NETWORK,UDP),(DST-PORT,443),(GEOSITE,cn)),🌐默认直连
+  # - AND,((NETWORK,UDP),(DST-PORT,443),(GEOIP,cn)),🌐默认直连
+  # - AND,((NETWORK,UDP),(DST-PORT,443),(NOT,((GEOSITE,geolocation-cn)))),✅默认代理
+  # - AND,((NETWORK,UDP),(DST-PORT,443),(NOT,((GEOIP,cn)))),✅默认代理
+
+  # 非中国 QUIC 分流配置（暂时停用）
+  # - AND,((NETWORK,UDP),(DST-PORT,443),(NOT,((GEOSITE,geolocation-cn)))),REJECT
+  # - AND,((NETWORK,UDP),(DST-PORT,443),(NOT,((GEOIP,cn)))),REJECT
+
+  # 拒绝全部 QUIC，促使应用回退 TCP/443
+  - AND,((NETWORK,UDP),(DST-PORT,443)),REJECT
 
   - GEOSITE,geolocation-cn,🌐默认直连 # 地理位置在中国的域名，不包括谷歌在中国的域名避免谷歌商店下载问题
   # - GEOSITE,geolocation-!cn@cn,🌐默认直连 # 地理位置不在中国的域名中具有国内CDN的部分，包括Steam在的国内CDN
