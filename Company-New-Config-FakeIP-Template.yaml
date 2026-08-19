@@ -138,65 +138,18 @@ dns:
     # ❌不要把 okx / binance / google / github / openai / telegram 放进这里
     # 它们应默认返回 fake-ip，以避免真实 DNS 结果被污染
 
-  # DNS 解析策略段
-  default-nameserver: *public-dns # ✅用于解析 DoH 服务器域名，保持国内 DNS
+  # redir-host配置段
+  default-nameserver: *public-dns # 用于解析 DoH 服务器域名，保持国内 DNS
   proxy-server-nameserver: *doh-dns # 代理节点域名使用国内 DoH
-  direct-nameserver: *doh-dns # DIRECT 出口域名使用国内 DoH
-  direct-nameserver-follow-policy: false
+  nameserver: *doh-dns # 默认使用阿里 DoH3 与 DNSPod DoH
+  # fallback: # 不使用 fallback，避免 DNS 泄露和复杂回退逻辑
 
+  # 仅保留代理 DNS 端点的启动解析；其余域名默认使用 doh-dns
   nameserver-policy:
-    # 代理 DoH 端点由国内 DoH 启动解析，避免递归自举循环
+    # 先用国内 DoH 解析代理 DNS 端点，避免递归自举循环
     "dns.google": *doh-dns
     "cloudflare-dns.com": *doh-dns
-
-    ## Crypto / 交易所 ---------------------------------------------------------------
-    # 这些域名统一使用 DNSPod DoT/DoH
-    "geosite:category-cryptocurrency": *doh-dns
-    "rule-set:company_custom_crypto": *doh-dns
-
-    ## AI ---------------------------------------------------------------------------
-    # AI 服务走 DNSPod DoT/DoH
-    "geosite:openai": *doh-dns
-    "geosite:google-gemini": *doh-dns
-    "geosite:anthropic": *doh-dns
-    "geosite:cursor": *doh-dns
-    "geosite:category-ai-!cn": *doh-dns
-
-    ## 常见被污染 / 代理域名 ---------------------------------------------------------
-    # 常见代理域名走 DNSPod DoT/DoH
-    "geosite:gfw": *doh-dns
-    "geosite:google": *doh-dns
-    "geosite:github": *doh-dns
-    "geosite:youtube": *doh-dns
-    "geosite:telegram": *doh-dns
-    "geosite:x": *doh-dns
-    "geosite:tiktok": *doh-dns
-    "geosite:category-social-media-!cn": *doh-dns
-    "rule-set:company_custom_rules": *doh-dns
-    "rule-set:custom_rules": *doh-dns
-
-    ## 国内 / 直连 / 局域网 ----------------------------------------------------------
-    # ✅新增：国内与直连域名显式走国内 DNS
-    "geosite:private": *public-dns
-    "geosite:cn": *public-dns
-    "geosite:geolocation-cn": *public-dns
-    "geosite:apple": *public-dns
-    "geosite:microsoft": *public-dns
-    "geosite:win-update": *public-dns
-    "geosite:alibaba": *public-dns
-    "geosite:tencent": *public-dns
-    "geosite:tencent-games": *public-dns
-    "geosite:onedrive": *public-dns
-    "geosite:bilibili": *public-dns
-    "geosite:bilibili-cdn": *public-dns
-    "geosite:bytedance": *public-dns
-    "geosite:category-cdn-cn": *public-dns
-    "rule-set:custom_direct": *public-dns
-    "rule-set:custom_ddns": *public-dns
-    "rule-set:company_custom_direct": *public-dns
-
-  nameserver: *doh-dns # 默认使用阿里 DoH3 与 DNSPod DoH；特定域名仍由 nameserver-policy 接管
-  # fallback: # 不使用 fallback，避免 DNS 泄露和复杂回退逻辑
+    # "geosite:openai,google-gemini,cursor,anthropic,category-ai-!cn,category-cryptocurrency,yahoo,github,youtube,google,telegram,x,whatsapp,tiktok,category-social-media-!cn,imdb,tmdb,category-dev@!cn,homebrew,category-container,gfw": *proxy-dns
 
 ## hosts设置---------------------------------------------------------------------------------------------------
 hosts:
@@ -210,6 +163,7 @@ hosts:
   "vm-op1.xbx.ops": 192.168.3.1
   "vm-op2.xbx.ops": 192.168.4.1
   "vm-op3.xbx.ops": 192.168.5.1
+  "vm-op6.xbx.ops": 192.168.6.1
   "vm-op99.xbx.ops": 192.168.99.1
   "ikuai.xbx.ops": 192.168.100.1
   "esxi-5.xbx.ops": 192.168.100.5
