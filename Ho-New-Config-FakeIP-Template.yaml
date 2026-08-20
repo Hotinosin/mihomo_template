@@ -377,6 +377,10 @@ proxy-groups:
     type: select
     <<: *default-proxy
 
+  - name: 💻极客论坛
+    type: select
+    <<: *default-proxy
+
   - name: 🧱GFW
     type: select
     <<: *default-proxy
@@ -469,6 +473,8 @@ rules:
   - GEOSITE,youtube,✅默认代理
   - GEOSITE,google,✅默认代理
 
+  # 💻极客论坛：包含 V2EX、Linux.do、NodeSeek、XDA 等
+  - GEOSITE,category-forums,💻极客论坛
 
   # 📱国际社交软件
   - GEOSITE,telegram,📱国际社交软件 # Telegram服务
