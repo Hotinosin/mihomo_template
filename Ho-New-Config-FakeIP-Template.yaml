@@ -446,6 +446,7 @@ rules:
   - GEOSITE,alibaba,🌐默认直连
   - GEOSITE,tencent,🌐默认直连
   - GEOSITE,tencent-games,🌐默认直连
+  - GEOSITE,didi,🌐默认直连
   - GEOSITE,apple,🌐默认直连
   - GEOSITE,onedrive,🌐默认直连
   - GEOSITE,bilibili,🌐默认直连
