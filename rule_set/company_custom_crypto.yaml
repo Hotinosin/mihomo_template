@@ -39,7 +39,6 @@ payload:
   - DOMAIN-SUFFIX,mainnet.optimism.io
   - DOMAIN-SUFFIX,app.meteora.ag
   - DOMAIN-SUFFIX,jup.ag
-  - DOMAIN-SUFFIX,yahoo.com
   - DOMAIN-SUFFIX,aicoin.com
   - DOMAIN-SUFFIX,static.aicoinstorge.com
   - DOMAIN-SUFFIX,bigcoin.tech

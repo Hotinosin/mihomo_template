@@ -18,7 +18,6 @@ payload:
   - DOMAIN-SUFFIX,ipv6.microsoft.com
   - DOMAIN-SUFFIX,xboxlive.com
   - DOMAIN-SUFFIX,rewards.bing.com
-  - DOMAIN-SUFFIX,api.onedrive.com
   - DOMAIN-SUFFIX,stun.isp.net.au
   - DOMAIN-SUFFIX,fwa.lifesizecloud.com
   - DOMAIN-SUFFIX,stun.freeswitch.org
