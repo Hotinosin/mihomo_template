@@ -1,7 +1,7 @@
 ## 模板名称: Company-New-Config-FakeIP-Template.yaml
-## 模板版本: 2026.08.06
+## 模板版本: 2026.09.08
 ## 基准来源: Company-Config-FakeIP-Template.yaml + Ho-New DNS/QUIC 改动
-## 修订日期: 2026-08-06
+## 修订日期: 2026-09-08
 
 ## 入站端口配置 ---------------------------------------------------------------------------------------------------
 mixed-port: 7890 # HTTP+Socks4混合，Win下的系统代理端口
@@ -129,10 +129,8 @@ dns:
     # - "geosite:cn"
 
     # ✅本地域名：返回真实 IP
-    - "address:/+.local/"
-    - "address:/+.home.arpa/"
-    - "address:/+.lan/"
     - "*.local"
+    - "*.home.arpa"
     - "*.lan" # ✅新增：补齐常见局域网后缀
 
     # ❌不要把 okx / binance / google / github / openai / telegram 放进这里
