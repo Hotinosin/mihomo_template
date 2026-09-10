@@ -1,7 +1,7 @@
 ## 模板名称: Ho-New-Config-FakeIP-Template.yaml
-## 模板版本: 2026.09.08
+## 模板版本: 2026.09.10
 ## 基准来源: Ho-Config
-## 修订日期: 2026-09-08
+## 修订日期: 2026-09-10
 
 ## 入站端口配置 ---------------------------------------------------------------------------------------------------
 mixed-port: 7890 # HTTP+Socks4混合，Win下的系统代理端口
@@ -495,7 +495,7 @@ rules:
   - GEOSITE,win-update,Ⓜ️微软服务 # 微软更新域名
   # 编程-docker相关
   - GEOSITE,category-container,✅默认代理 # 各种容器服务
-  - GEOSITE,category-dev@!cn,✅默认代理
+  # - GEOSITE,category-dev@!cn,✅默认代理
   - GEOSITE,homebrew,✅默认代理
   - GEOSITE,category-cas,🌐默认直连 # 证书颁发机构，直连以防止证书错误
 
@@ -517,7 +517,7 @@ rules:
   # - AND,((NETWORK,UDP),(DST-PORT,443),(NOT,((GEOIP,cn)))),REJECT
 
   # 拒绝全部 QUIC，促使应用回退 TCP/443
-  - AND,((NETWORK,UDP),(DST-PORT,443)),REJECT
+  # - AND,((NETWORK,UDP),(DST-PORT,443)),REJECT
 
   - GEOSITE,geolocation-cn,🌐默认直连 # 地理位置在中国的域名，不包括谷歌在中国的域名避免谷歌商店下载问题
   # - GEOSITE,geolocation-!cn@cn,🌐默认直连 # 地理位置不在中国的域名中具有国内CDN的部分，包括Steam在的国内CDN
