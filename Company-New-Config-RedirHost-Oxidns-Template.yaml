@@ -76,9 +76,11 @@ doh-dns: &doh-dns # 默认直连加密 DNS：阿里 DoH3 与 DNSPod DoH 并发�
   - "https://dns.alidns.com/dns-query#h3=true"
   - "https://doh.pub/dns-query"
 
-proxy-dns: &proxy-dns # 备用：代理域名使用 Cloudflare/Google DoH3
-  - "https://cloudflare-dns.com/dns-query#✅默认代理&h3=true"
-  - "https://dns.google/dns-query#✅默认代理&h3=true"
+proxy-dns: &proxy-dns # 代理域名 DNS：TCP 系保稳 + QUIC 系拿低延迟，并发查询取最快、互为备用
+  # 实测：Hysteria2 节点上 QUIC 中位更快但长尾可达 7.8s（会触发 DNS 超时），
+  #       故一条走 TCP DoH 兜长尾，一条走 DoH3 抢中位延迟。
+  - "https://cloudflare-dns.com/dns-query#✅默认代理" # TCP DoH：稳定，不超时
+  - "https://dns.google/dns-query#✅默认代理&h3=true" # DoH3(QUIC)：中位延迟最优时胜出
 
 dns:
   enable: true # 启用 dns 模块，否则采用系统 DNS
@@ -102,7 +104,11 @@ dns:
     # 使用本机 Oxidns 解析代理 DNS 端点，避免递归自举循环
     "dns.google": *public-dns
     "cloudflare-dns.com": *public-dns
-    # "geosite:openai,google-gemini,cursor,anthropic,category-ai-!cn,category-cryptocurrency,yahoo,github,youtube,google,telegram,x,whatsapp,tiktok,category-social-media-!cn,imdb,tmdb,category-dev@!cn,homebrew,category-container,gfw": *proxy-dns
+    # ★ 与路由规则用同一张网：凡是走代理的域名，其 DNS 也必须走代理解析，
+    #   否则 mihomo 本地解析（UDP/QUIC 拨号前必经步骤）会拿到国内 DoH 的污染结果。
+    "geosite:geolocation-!cn@cn": *public-dns # 国外表里但国内可达 → 国内解析（拿最优 CDN）
+    "geosite:geolocation-!cn": *proxy-dns # 走代理的国外域名 → 代理解析（防污染）
+    "geosite:openai,google-gemini,cursor,anthropic,category-ai-!cn,category-cryptocurrency,yahoo,github,youtube,google,telegram,x,whatsapp,tiktok,category-social-media-!cn,imdb,tmdb,category-dev,homebrew,category-container,gfw": *proxy-dns
 
 ## hosts设置---------------------------------------------------------------------------------------------------
 hosts:
@@ -358,7 +364,10 @@ proxy-groups:
 
   - name: 🐟漏网之鱼
     type: select
-    <<: *default-direct
+    # ★ 兜底组改为代理优先：QUIC 嗅探不到域名时会落到这里，避免裸奔直连
+    proxies:
+      - ✅默认代理
+      - DIRECT
 
 
 ## 规则提供者设置---------------------------------------------------------------------------------------------------
@@ -487,8 +496,11 @@ rules:
   # - AND,((NETWORK,UDP),(DST-PORT,443),(NOT,((GEOIP,cn)))),REJECT
 
   # 拒绝全部 QUIC，促使应用回退 TCP/443
-  - AND,((NETWORK,UDP),(DST-PORT,443)),REJECT
+  # - AND,((NETWORK,UDP),(DST-PORT,443)),REJECT
 
+  # ★ 国外域名兜底（与 nameserver-policy 同一张网；必须放在国内直连规则之前）
+  - GEOSITE,geolocation-!cn@cn,🌐默认直连 # 国外表里但国内可达的域名 → 直连
+  - GEOSITE,geolocation-!cn,✅默认代理 # 其余国外域名 → 代理，不再掉进漏网之鱼
   - GEOSITE,geolocation-cn,🌐默认直连 # 地理位置在中国的域名，不包括谷歌在中国的域名避免谷歌商店下载问题
   - GEOSITE,cn,🌐默认直连
   - GEOIP,google,✅默认代理,no-resolve
