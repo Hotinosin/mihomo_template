@@ -12,5 +12,4 @@ payload:
   - DOMAIN-SUFFIX,quantclass.cn
   - DOMAIN-SUFFIX,qtcls.cn
   - DOMAIN-KEYWORD,quantclass
-  - IP-CIDR,43.167.232.57/32
-  - IP-CIDR,43.133.189.119/32
+  - DST-PORT,22
