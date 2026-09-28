@@ -155,7 +155,7 @@ dns:
 hosts: # 自定义hosts映射，可以在此处手动指定一些Fakeip地址以强制分流
   "mihomo.mihomo": 127.0.0.1
   #自用
-  "fnos.hotinosin.site": 192.168.10.121
+  # "fnos.hotinosin.site": 192.168.10.121
   #公司
   "mongo.lan": 192.168.100.42
   "vcenter.lan": 192.168.100.4
