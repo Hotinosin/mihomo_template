@@ -450,7 +450,7 @@ rules:
   # Direct 直连规则
   - GEOSITE,CATEGORY-SPEEDTEST,✈️Speedtest
   - GEOSITE,CATEGORY-IP-GEO-DETECT,🅿️IP-Check
-  - GEOSITE:tailscale,🌐默认直连
+  - GEOSITE,tailscale,🌐默认直连
   - GEOSITE,alibaba,🌐默认直连
   - GEOSITE,tencent,🌐默认直连
   - GEOSITE,tencent-games,🌐默认直连
