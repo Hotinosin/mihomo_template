@@ -108,7 +108,7 @@ dns:
     - "rule-set:custom_ddns" #ho的直连域名
     - "rule-set:custom_direct" #ho的直连域名
     - "geosite:private" # 私有地址，包括stun，lan，路由器后台网址等域名
-    # - "geosite:tailscale" # Tailscale域名，包括P2P打洞过程
+    - "geosite:tailscale" # Tailscale域名，包括P2P打洞过程
     - "geosite:apple" # 苹果域名，配合双WAN分流可以避免长链接耗电问题
     - "geosite:category-cas" # 各类证书颁发机构域名
     - "geosite:category-public-tracker" # 公共tracker域名
@@ -450,6 +450,7 @@ rules:
   # Direct 直连规则
   - GEOSITE,CATEGORY-SPEEDTEST,✈️Speedtest
   - GEOSITE,CATEGORY-IP-GEO-DETECT,🅿️IP-Check
+  - GEOSITE:tailscale,🌐默认直连
   - GEOSITE,alibaba,🌐默认直连
   - GEOSITE,tencent,🌐默认直连
   - GEOSITE,tencent-games,🌐默认直连
