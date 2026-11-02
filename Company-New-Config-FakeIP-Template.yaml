@@ -1,7 +1,7 @@
 ## 模板名称: Company-New-Config-FakeIP-Template.yaml
-## 模板版本: 2026.09.08
+## 模板版本: 2026.11.02
 ## 基准来源: Company-Config-FakeIP-Template.yaml + Ho-New DNS/QUIC 改动
-## 修订日期: 2026-09-08
+## 修订日期: 2026-11-02
 
 ## 入站端口配置 ---------------------------------------------------------------------------------------------------
 mixed-port: 7890 # HTTP+Socks4混合，Win下的系统代理端口
@@ -107,6 +107,7 @@ dns:
 
     # ✅内网 / 本地 / 时间同步：返回真实 IP
     - "geosite:private"
+    - "geosite:tailscale" # Tailscale 域名返回真实 IP
 
     # ✅确定直连且不怕 DNS 污染的国内/系统服务：返回真实 IP
     - "geosite:apple"
@@ -403,10 +404,6 @@ proxy-groups:
     type: select
     <<: *default-proxy
 
-  - name: 🌐默认直连
-    type: select
-    <<: *default-direct
-
   - name: 🐟漏网之鱼
     type: select
     # ★ 兜底组改为代理优先：QUIC 嗅探不到域名时会落到这里，避免裸奔直连
@@ -465,22 +462,23 @@ rules:
   - GEOSITE,CATEGORY-IP-GEO-DETECT,🅿️IP-Check
 
   # Direct 直连规则
-  - GEOSITE,alibaba,🌐默认直连
-  - GEOSITE,tencent,🌐默认直连
-  - GEOSITE,tencent-games,🌐默认直连
-  - GEOSITE,apple,🌐默认直连
-  - GEOSITE,onedrive,🌐默认直连
+  - GEOSITE,tailscale,DIRECT
+  - GEOSITE,alibaba,DIRECT
+  - GEOSITE,tencent,DIRECT
+  - GEOSITE,tencent-games,DIRECT
+  - GEOSITE,apple,DIRECT
+  - GEOSITE,onedrive,DIRECT
   - GEOSITE,biliintl,Bilibili国际版 # 必须放在国内 Bilibili 规则之前
-  - GEOSITE,bilibili,🌐默认直连
-  - GEOSITE,bilibili-cdn,🌐默认直连
-  - GEOSITE,bytedance,🌐默认直连
-  - RULE-SET,company_custom_direct,🌐默认直连
-  - RULE-SET,custom_direct,🌐默认直连
-  - RULE-SET,custom_ddns,🌐默认直连
+  - GEOSITE,bilibili,DIRECT
+  - GEOSITE,bilibili-cdn,DIRECT
+  - GEOSITE,bytedance,DIRECT
+  - RULE-SET,company_custom_direct,DIRECT
+  - RULE-SET,custom_direct,DIRECT
+  - RULE-SET,custom_ddns,DIRECT
   # 游戏相关
-  - GEOSITE,synology,🌐默认直连 # 群晖服务，包括QC
-  - GEOSITE,category-game-platforms-download,🌐默认直连 # 各类游戏平台下载域名，包括steam下载
-  - GEOSITE,category-cas,🌐默认直连 # 证书颁发机构，直连以防止证书错误
+  - GEOSITE,synology,DIRECT # 群晖服务，包括QC
+  - GEOSITE,category-game-platforms-download,DIRECT # 各类游戏平台下载域名，包括steam下载
+  - GEOSITE,category-cas,DIRECT # 证书颁发机构，直连以防止证书错误
 
 
   # Coin 相关规则块
@@ -521,7 +519,8 @@ rules:
   - GEOSITE,win-update,Ⓜ️微软服务 # 微软更新域名
   # 编程-docker相关
   - GEOSITE,category-container,🐳Docker # 各种容器服务
-  - GEOSITE,category-dev@!cn,✅默认代理
+  - GEOSITE,category-dev,✅默认代理
+  - GEOSITE,homebrew,✅默认代理
 
 
   #### 兜底规则块，一般精细的分流规则应在其上
@@ -530,9 +529,9 @@ rules:
   - GEOSITE,steam,🎮Steam # Steam，默认直连，换区时修改此处，放于GFW之后是因创意工坊需始终代理
 
   # 当前 QUIC 分流配置（暂时停用）
-  # - AND,((NETWORK,UDP),(DST-PORT,443),(GEOSITE,geolocation-cn)),🌐默认直连
-  # - AND,((NETWORK,UDP),(DST-PORT,443),(GEOSITE,cn)),🌐默认直连
-  # - AND,((NETWORK,UDP),(DST-PORT,443),(GEOIP,cn)),🌐默认直连
+  # - AND,((NETWORK,UDP),(DST-PORT,443),(GEOSITE,geolocation-cn)),DIRECT
+  # - AND,((NETWORK,UDP),(DST-PORT,443),(GEOSITE,cn)),DIRECT
+  # - AND,((NETWORK,UDP),(DST-PORT,443),(GEOIP,cn)),DIRECT
   # - AND,((NETWORK,UDP),(DST-PORT,443),(NOT,((GEOSITE,geolocation-cn)))),REJECT
   # - AND,((NETWORK,UDP),(DST-PORT,443),(NOT,((GEOIP,cn)))),REJECT
 
@@ -544,10 +543,10 @@ rules:
   # - AND,((NETWORK,UDP),(DST-PORT,443)),REJECT
 
   # ★ 国外域名兜底（与 nameserver-policy 同一张网；必须放在国内直连规则之前）
-  - GEOSITE,geolocation-!cn@cn,🌐默认直连 # 国外表里但国内可达的域名 → 直连
+  - GEOSITE,geolocation-!cn@cn,DIRECT # 国外表里但国内可达的域名 → 直连
   - GEOSITE,geolocation-!cn,✅默认代理 # 其余国外域名 → 代理，不再掉进漏网之鱼
-  - GEOSITE,geolocation-cn,🌐默认直连 # 地理位置在中国的域名，不包括谷歌在中国的域名避免谷歌商店下载问题
-  - GEOSITE,cn,🌐默认直连
+  - GEOSITE,geolocation-cn,DIRECT # 地理位置在中国的域名，不包括谷歌在中国的域名避免谷歌商店下载问题
+  - GEOSITE,cn,DIRECT
   - GEOIP,google,✅默认代理,no-resolve
-  - GEOIP,cn,🌐默认直连,no-resolve # 中国IP
+  - GEOIP,cn,DIRECT,no-resolve # 中国IP
   - MATCH,🐟漏网之鱼 # 漏网之鱼
