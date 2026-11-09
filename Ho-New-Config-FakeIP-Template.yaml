@@ -58,7 +58,7 @@ geo-auto-update: true # GEO文件自动更新
 geo-update-interval: 168 # 更新间隔，小时
 geox-url: # GEO数据库下载地址，内核按需下载，统一使用 MetaCubeX 数据源
   geoip: "https://ghfast.top/https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/geoip.dat"
-  geosite: "https://ghfast.top/https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/geosite.dat"
+  geosite: "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/geosite.dat"
   mmdb: "https://ghfast.top/https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/country.mmdb"
   asn: "https://ghfast.top/https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/GeoLite2-ASN.mmdb"
 
@@ -146,7 +146,6 @@ dns:
     "cloudflare-dns.com": *doh-dns
     # ★ 与路由规则用同一张网：凡是走代理的域名，其 DNS 也必须走代理解析，
     #   否则 mihomo 本地解析（UDP/QUIC 拨号前必经步骤）会拿到国内 DoH 的污染结果。
-    "geosite:geolocation-!cn@cn": *doh-dns # 国外表里但国内可达 → 国内解析（拿最优 CDN）
     "geosite:geolocation-!cn": *proxy-dns # 走代理的国外域名 → 代理解析（防污染）
     "geosite:openai,google-gemini,cursor,anthropic,category-ai-!cn,category-cryptocurrency,yahoo,github,youtube,google,telegram,x,whatsapp,tiktok,category-social-media-!cn,imdb,tmdb,category-dev,homebrew,category-container,gfw": *proxy-dns
 
@@ -514,7 +513,6 @@ rules:
   - GEOSITE,steam,🎮Steam # Steam，默认直连，换区时修改此处，放于GFW之后是因创意工坊需始终代理
 
   # ★ 国外域名兜底（与 nameserver-policy 同一张网；必须放在国内直连规则之前）
-  - GEOSITE,geolocation-!cn@cn,DIRECT # 国外表里但国内可达的域名 → 直连
   - GEOSITE,geolocation-!cn,✅默认代理 # 其余国外域名 → 代理，不再掉进漏网之鱼
   - GEOSITE,geolocation-cn,DIRECT # 地理位置在中国的域名，不包括谷歌在中国的域名避免谷歌商店下载问题
   # - GEOSITE,geolocation-!cn@cn,DIRECT # 地理位置不在中国的域名中具有国内CDN的部分，包括Steam在的国内CDN
