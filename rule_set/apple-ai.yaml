@@ -5,6 +5,7 @@ payload:
   - DOMAIN-SUFFIX,xp.apple.com
   - DOMAIN-SUFFIX,mesu.apple.com
   - DOMAIN,guzzoni.apple.com
+  - DOMAIN,api-siri-prod.apple.com
   - DOMAIN-SUFFIX,smoot.apple.com
   - DOMAIN,gateway.icloud.com
   - DOMAIN,gs-loc-cn.apple.com
