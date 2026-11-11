@@ -152,9 +152,9 @@ dns:
     "cloudflare-dns.com": *doh-dns
     # ★ 与路由规则用同一张网：凡是走代理的域名，其 DNS 也必须走代理解析，
     #   否则 mihomo 本地解析（UDP/QUIC 拨号前必经步骤）会拿到国内 DoH 的污染结果。
-    "geosite:geolocation-!cn@cn": *doh-dns # 国外表里但国内可达 → 国内解析（拿最优 CDN）
+    # "geosite:geolocation-!cn@cn": *doh-dns # 国外表里但国内可达 → 国内解析（拿最优 CDN）
     "geosite:geolocation-!cn": *proxy-dns # 走代理的国外域名 → 代理解析（防污染）
-    "geosite:openai,google-gemini,cursor,anthropic,category-ai-!cn,category-cryptocurrency,yahoo,github,youtube,google,telegram,x,whatsapp,tiktok,category-social-media-!cn,imdb,tmdb,category-dev,homebrew,category-container,gfw": *proxy-dns
+    "geosite:openai,google-gemini,cursor,anthropic,category-ai-!cn,category-cryptocurrency,yahoo,github,youtube,google,telegram,x,whatsapp,tiktok,meta,category-social-media-!cn,imdb,tmdb,category-dev,homebrew,category-container,gfw": *proxy-dns
 
 ## hosts设置---------------------------------------------------------------------------------------------------
 hosts: # 自定义hosts映射，可以在此处手动指定一些Fakeip地址以强制分流
@@ -379,13 +379,6 @@ proxy-groups:
     type: select
     <<: *default-proxy
 
-  - name: 🐳Docker
-    type: select
-    proxies:
-      - 🇺🇲美国节点
-      - ✅默认代理
-      - DIRECT
-
   - name: 🧱GFW
     type: select
     <<: *default-proxy
@@ -456,32 +449,29 @@ rule-providers:
 rules:
   #### 对于必须直连者直接使用direct写死，其他尽可能使用代理组以方便面板控制以及切换测试
 
-  # 私有地址绕过块
-  - GEOSITE,private,DIRECT # 私有地址直连
-  - GEOIP,private,DIRECT,no-resolve # 私有地址直连
-
+  # 测速、IP 检测及地区分流优先规则
   - GEOSITE,CATEGORY-SPEEDTEST,✈️Speedtest
   - GEOSITE,CATEGORY-IP-GEO-DETECT,🅿️IP-Check
+  - GEOSITE,biliintl,Bilibili国际版 # 必须放在国内 Bilibili 规则之前
 
   # Direct 直连规则
+  - GEOSITE,private,DIRECT # 私有地址直连
+  - GEOIP,private,DIRECT,no-resolve # 私有地址直连
   - GEOSITE,tailscale,DIRECT
   - GEOSITE,alibaba,DIRECT
   - GEOSITE,tencent,DIRECT
   - GEOSITE,tencent-games,DIRECT
   - GEOSITE,apple,DIRECT
   - GEOSITE,onedrive,DIRECT
-  - GEOSITE,biliintl,Bilibili国际版 # 必须放在国内 Bilibili 规则之前
   - GEOSITE,bilibili,DIRECT
   - GEOSITE,bilibili-cdn,DIRECT
   - GEOSITE,bytedance,DIRECT
   - RULE-SET,company_custom_direct,DIRECT
   - RULE-SET,custom_direct,DIRECT
   - RULE-SET,custom_ddns,DIRECT
-  # 游戏相关
   - GEOSITE,synology,DIRECT # 群晖服务，包括QC
   - GEOSITE,category-game-platforms-download,DIRECT # 各类游戏平台下载域名，包括steam下载
   - GEOSITE,category-cas,DIRECT # 证书颁发机构，直连以防止证书错误
-
 
   # Coin 相关规则块
   - GEOSITE,category-cryptocurrency,💰Crypto
@@ -520,12 +510,12 @@ rules:
   - GEOSITE,win-extra,Ⓜ️微软服务 # outlook域名
   - GEOSITE,win-update,Ⓜ️微软服务 # 微软更新域名
   # 编程-docker相关
-  - GEOSITE,category-container,🐳Docker # 各种容器服务
+  - GEOSITE,category-container,✅默认代理 # 各种容器服务
   - GEOSITE,category-dev,✅默认代理
   - GEOSITE,homebrew,✅默认代理
 
-
   #### 兜底规则块，一般精细的分流规则应在其上
+  - GEOSITE,meta,📱国际社交软件 # Meta 旗下服务
   - GEOSITE,gfw,🧱GFW # GFW兜底
   - GEOSITE,microsoft,Ⓜ️微软服务 # 微软服务，放于GFW后是因为github等在GFW中需要代理
   - GEOSITE,steam,🎮Steam # Steam，默认直连，换区时修改此处，放于GFW之后是因创意工坊需始终代理
@@ -545,7 +535,7 @@ rules:
   # - AND,((NETWORK,UDP),(DST-PORT,443)),REJECT
 
   # ★ 国外域名兜底（与 nameserver-policy 同一张网；必须放在国内直连规则之前）
-  - GEOSITE,geolocation-!cn@cn,DIRECT # 国外表里但国内可达的域名 → 直连
+  # - GEOSITE,geolocation-!cn@cn,DIRECT # 国外表里但国内可达的域名 → 直连
   - GEOSITE,geolocation-!cn,✅默认代理 # 其余国外域名 → 代理，不再掉进漏网之鱼
   - GEOSITE,geolocation-cn,DIRECT # 地理位置在中国的域名，不包括谷歌在中国的域名避免谷歌商店下载问题
   - GEOSITE,cn,DIRECT
