@@ -80,10 +80,6 @@ isp-dns: &isp-dns # 运营商 DNS，用于启动解析及指定域名解析
   - "udp://[240e:5a::6666]:53"
   - "udp://[240e:5b::6666]:53"
 
-doh-dns: &doh-dns # 默认直连加密 DNS：阿里 DoH3 与 DNSPod DoH 并发查询
-  - "https://dns.alidns.com/dns-query#h3=true"
-  - "https://doh.pub/dns-query"
-
 proxy-dns: &proxy-dns # 代理域名 DNS：TCP 系保稳 + QUIC 系拿低延迟，并发查询取最快、互为备用
   # 实测：Hysteria2 节点上 QUIC 中位更快但长尾可达 7.8s（会触发 DNS 超时），
   #       故一条走 TCP DoH 兜长尾，一条走 DoH3 抢中位延迟。
@@ -109,6 +105,8 @@ dns:
     - "rule-set:custom_ddns" #ho的直连域名
     - "rule-set:custom_direct" #ho的直连域名
     - "geosite:private" # 私有地址，包括stun，lan，路由器后台网址等域名
+    - "geosite:synology"
+    - "geosite:didi"
     - "geosite:tailscale" # Tailscale域名，包括P2P打洞过程
     - "geosite:apple" # 苹果域名，配合双WAN分流可以避免长链接耗电问题
     - "geosite:category-cas" # 各类证书颁发机构域名
@@ -133,21 +131,28 @@ dns:
 
   # redir-host配置段
   default-nameserver: *isp-dns # 使用运营商 DNS 解析加密 DNS 服务器域名
-  proxy-server-nameserver: *doh-dns # 代理节点域名使用国内 DoH
-  nameserver: *doh-dns # 默认使用阿里 DoH3 与 DNSPod DoH
+  proxy-server-nameserver: *isp-dns # 代理节点域名使用运营商 DNS，避免依赖代理自举
+  nameserver: *isp-dns # 未分类域名默认使用运营商 DNS
   # fallback: # 过时的配置，已被 nameserver-policy 取代，使用时会产生DNS泄露
 
 
-  # Apple、腾讯、哔哩哔哩、微软和字节跳动使用运营商 DNS
+  # 代理分类优先；国内域名使用运营商 DNS
   nameserver-policy:
-    "geosite:apple,tencent,tencent-games,bilibili,bilibili-cdn,microsoft,win-extra,win-update,bytedance": *isp-dns
-    # 先用国内 DoH 解析代理 DNS 端点，避免递归自举循环
-    "dns.google": *doh-dns
-    "cloudflare-dns.com": *doh-dns
+    "rule-set:custom_rules": *proxy-dns
+    "rule-set:apple-ai": *proxy-dns
+    "geosite:apple-intelligence": *proxy-dns
+    # 先用运营商 DNS 解析代理 DNS 端点，避免递归自举循环
+    "dns.google": *isp-dns
+    "cloudflare-dns.com": *isp-dns
     # ★ 与路由规则用同一张网：凡是走代理的域名，其 DNS 也必须走代理解析，
-    #   否则 mihomo 本地解析（UDP/QUIC 拨号前必经步骤）会拿到国内 DoH 的污染结果。
-    "geosite:geolocation-!cn": *proxy-dns # 走代理的国外域名 → 代理解析（防污染）
-    "geosite:openai,google-gemini,cursor,anthropic,category-ai-!cn,category-cryptocurrency,yahoo,github,youtube,google,telegram,x,whatsapp,tiktok,meta,category-social-media-!cn,imdb,tmdb,category-dev,homebrew,category-container,gfw": *proxy-dns
+    #   否则 mihomo 本地解析（UDP/QUIC 拨号前必经步骤）可能拿到受污染的解析结果。
+    "geosite:openai,google-gemini,cursor,anthropic,category-ai-!cn,category-cryptocurrency,yahoo,github,youtube,google,category-forums,telegram,x,whatsapp,tiktok,category-social-media-!cn,imdb,tmdb,category-dev,homebrew,category-container": *proxy-dns
+    # 专门的代理分类在前；Direct 域名优先于国外域名兜底
+    "rule-set:custom_direct,custom_ddns": *isp-dns
+    "geosite:private,synology,category-game-platforms-download,category-cas,tailscale,alibaba,tencent,tencent-games,didi,apple,onedrive,bilibili,bilibili-cdn,bytedance": *isp-dns
+    "geosite:meta,gfw,microsoft,win-extra,win-update": *proxy-dns
+    "geosite:geolocation-!cn": *proxy-dns
+    "geosite:geolocation-cn,cn": *isp-dns
 
 
 
@@ -369,6 +374,10 @@ proxy-groups:
     <<: *health-check-general
     filter: "(?=.*(美|US|(?i)States|America))^((?!(Akilo|Company|Ho|x2|港|台|日|韩|新|倍)).)*$"
 
+  - name: 🍎Ai
+    type: select
+    <<: *proxy-group
+
   - name: 🅰️Ai
     type: select
     <<: *proxy-group
@@ -420,6 +429,11 @@ rule-providers-general: &rule-providers-general
   interval: 86400
 
 rule-providers:
+  apple-ai:
+    <<: *rule-providers-general
+    url: https://raw.githubusercontent.com/Hotinosin/mihomo_template/main/rule_set/apple-ai.yaml
+    path: ./providers/rule/rule-provider_apple-ai.yaml
+
   custom_rules:
     <<: *rule-providers-general
     url: https://raw.githubusercontent.com/Hotinosin/mihomo_template/main/rule_set/custom_rules.yaml
@@ -439,30 +453,17 @@ rule-providers:
 rules:
   #### 对于必须直连者直接使用direct写死，其他尽可能使用代理组以方便面板控制以及切换测试
 
+  # 私有地址绕过块
+  - GEOIP,private,DIRECT,no-resolve # 私有地址直连
+  - GEOSITE,private,DIRECT # 私有地址直连
+
   # 测速、IP 检测及地区分流优先规则
   - GEOSITE,CATEGORY-SPEEDTEST,✈️Speedtest
   - GEOSITE,CATEGORY-IP-GEO-DETECT,🅿️IP-Check
 
-  # Direct 直连规则
-  - GEOIP,private,DIRECT,no-resolve # 私有地址直连
-  - GEOSITE,private,DIRECT # 私有地址直连
-  - GEOSITE,tailscale,DIRECT
-  - GEOSITE,alibaba,DIRECT
-  - GEOSITE,tencent,DIRECT
-  - GEOSITE,tencent-games,DIRECT
-  - GEOSITE,didi,DIRECT
-  - GEOSITE,apple,DIRECT
-  - GEOSITE,onedrive,DIRECT
-  - GEOSITE,bilibili,DIRECT
-  - GEOSITE,bilibili-cdn,DIRECT
-  - GEOSITE,bytedance,DIRECT
-  - RULE-SET,custom_direct,DIRECT
-  - RULE-SET,custom_ddns,DIRECT
-  - GEOSITE,synology,DIRECT # 群晖服务，包括QC
-  - GEOSITE,category-game-platforms-download,DIRECT # 各类游戏平台下载域名，包括steam下载
-  - GEOSITE,category-cas,DIRECT # 证书颁发机构，直连以防止证书错误
-
   # AI相关
+  - GEOSITE,apple-intelligence,🍎Ai
+  - RULE-SET,apple-ai,🍎Ai
   - GEOSITE,openai,🅰️Ai # openai服务
   - GEOSITE,google-gemini,🅰️Ai # gemini
   - GEOSITE,cursor,🅰️Ai # cursor
@@ -501,6 +502,23 @@ rules:
   - GEOSITE,category-container,✅默认代理 # 各种容器服务
   - GEOSITE,category-dev,✅默认代理
   - GEOSITE,homebrew,✅默认代理
+
+  # Direct 直连规则
+  - GEOSITE,synology,DIRECT # 群晖服务，包括QC
+  - GEOSITE,category-game-platforms-download,DIRECT # 各类游戏平台下载域名，包括steam下载
+  - GEOSITE,category-cas,DIRECT # 证书颁发机构，直连以防止证书错误
+  - GEOSITE,tailscale,DIRECT
+  - GEOSITE,alibaba,DIRECT
+  - GEOSITE,tencent,DIRECT
+  - GEOSITE,tencent-games,DIRECT
+  - GEOSITE,didi,DIRECT
+  - GEOSITE,apple,DIRECT
+  - GEOSITE,onedrive,DIRECT
+  - GEOSITE,bilibili,DIRECT
+  - GEOSITE,bilibili-cdn,DIRECT
+  - GEOSITE,bytedance,DIRECT
+  - RULE-SET,custom_direct,DIRECT
+  - RULE-SET,custom_ddns,DIRECT
 
   #### 兜底规则块，一般精细的分流规则应在其上
   - GEOSITE,meta,📱国际社交软件 # Meta 旗下服务
